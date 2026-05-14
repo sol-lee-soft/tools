@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sol-Lee-Soft Clinical Metrics</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --accent-color: #03dac6;
+            --error-color: #cf6679;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container { width: 100%; max-width: 500px; }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            background: var(--card-bg);
+            border: 1px solid #333;
+            color: var(--accent-color);
+            padding: 12px 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+
+        .nav-btn:active { background: #2c2c2c; }
+
+        .calculator-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            display: none;
+        }
+
+        .active { display: block; }
+
+        .input-group { margin-bottom: 12px; }
+
+        label { display: block; margin-bottom: 4px; font-size: 0.8rem; color: #bbb; }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: white;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #2c2c2c;
+            border-left: 4px solid var(--accent-color);
+            border-radius: 4px;
+        }
+
+        button.calc-trigger {
+            width: 100%;
+            background: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .footer-note:hover { color: var(--accent-color); }
+
+        /* Centered Modal Fix */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 999;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 25px;
+            width: 85%;
+            max-width: 420px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .disclaimer-text {
+            font-size: 0.8rem;
+            color: #ccc;
+            text-align: justify;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+         <h2 style="margin:0; color: var(--accent-color);">Sol-Lee-Soft</h2>
+        <small>v1.0.0 | Clinical Metrics Dashboard</small>
+       <a href="index.html" style="color: var(--accent-color); text-decoration: none; font-size: 0.85rem; font-weight: bold;">← BACK</a>
+    </header>
+
+    <div class="nav-grid">
+        <button class="nav-btn" onclick="showCalc('meldna')">MELD-Na</button>
+        <button class="nav-btn" onclick="showCalc('meld3')">MELD 3.0</button>
+        <button class="nav-btn" onclick="showCalc('egfr')">eGFR</button>
+        <button class="nav-btn" onclick="showCalc('fib4')">FIB-4</button>
+        <button class="nav-btn" onclick="showCalc('apri')">APRI</button>
+        <button class="nav-btn" onclick="showCalc('buncr')">BUN/Cr</button>
+        <button class="nav-btn" onclick="showCalc('child')">Child-Pugh</button>
+        <button class="nav-btn" onclick="showCalc('maddrey')">Maddrey DF</button>
+    </div>
+
+    <!-- MELD-Na -->
+    <div id="meldna" class="calculator-card active">
+        <h3>MELD-Na (Pre-2023)</h3>
+        <div class="input-group"><label>Creatinine (mg/dL)</label><input type="number" id="na-cr" step="0.1"></div>
+        <div class="input-group"><label>Bilirubin (mg/dL)</label><input type="number" id="na-bili" step="0.1"></div>
+        <div class="input-group"><label>INR</label><input type="number" id="na-inr" step="0.1"></div>
+        <div class="input-group"><label>Sodium (mEq/L)</label><input type="number" id="na-na" step="1"></div>
+        <button class="calc-trigger" onclick="calcMeldNa()">Calculate MELD-Na</button>
+        <div id="na-res" class="result">Result...</div>
+    </div>
+
+    <!-- MELD 3.0 -->
+    <div id="meld3" class="calculator-card">
+        <h3>MELD 3.0</h3>
+        <div class="input-group"><label>Sex</label><select id="m3-sex"><option value="male">Male</option><option value="female">Female</option></select></div>
+        <div class="input-group"><label>Creatinine (mg/dL)</label><input type="number" id="m3-cr" step="0.1"></div>
+        <div class="input-group"><label>Bilirubin (mg/dL)</label><input type="number" id="m3-bili" step="0.1"></div>
+        <div class="input-group"><label>INR</label><input type="number" id="m3-inr" step="0.1"></div>
+        <div class="input-group"><label>Sodium (mEq/L)</label><input type="number" id="m3-na" step="1"></div>
+        <div class="input-group"><label>Albumin (g/dL)</label><input type="number" id="m3-alb" step="0.1"></div>
+        <button class="calc-trigger" onclick="calcMeld3()">Calculate MELD 3.0</button>
+        <div id="m3-res" class="result">Result...</div>
+    </div>
+
+    <!-- eGFR -->
+    <div id="egfr" class="calculator-card">
+        <h3>eGFR (CKD-EPI 2021)</h3>
+        <div class="input-group"><label>Creatinine (mg/dL)</label><input type="number" id="egfr-cr" step="0.1"></div>
+        <div class="input-group"><label>Age</label><input type="number" id="egfr-age"></div>
+        <div class="input-group"><label>Sex</label><select id="egfr-sex"><option value="male">Male</option><option value="female">Female</option></select></div>
+        <button class="calc-trigger" onclick="calcEGFR()">Calculate eGFR</button>
+        <div id="egfr-res" class="result">Result...</div>
+    </div>
+
+    <!-- FIB-4 -->
+    <div id="fib4" class="calculator-card">
+        <h3>FIB-4 Index</h3>
+        <div class="input-group"><label>Age</label><input type="number" id="f4-age"></div>
+        <div class="input-group"><label>AST (U/L)</label><input type="number" id="f4-ast"></div>
+        <div class="input-group"><label>ALT (U/L)</label><input type="number" id="f4-alt"></div>
+        <div class="input-group"><label>Platelets (10³/µL)</label><input type="number" id="f4-plt"></div>
+        <button class="calc-trigger" onclick="calcFib4()">Calculate FIB-4</button>
+        <div id="f4-res" class="result">Result...</div>
+    </div>
+
+    <!-- APRI -->
+    <div id="apri" class="calculator-card">
+        <h3>APRI Score</h3>
+        <div class="input-group"><label>AST (U/L)</label><input type="number" id="ap-ast"></div>
+        <div class="input-group"><label>AST ULN (Typically 40)</label><input type="number" id="ap-uln" value="40"></div>
+        <div class="input-group"><label>Platelets (10³/µL)</label><input type="number" id="ap-plt"></div>
+        <button class="calc-trigger" onclick="calcApri()">Calculate APRI</button>
+        <div id="ap-res" class="result">Result...</div>
+    </div>
+
+    <!-- BUN/Cr -->
+    <div id="buncr" class="calculator-card">
+        <h3>BUN / Creatinine Ratio</h3>
+        <div class="input-group"><label>BUN (mg/dL)</label><input type="number" id="bc-bun"></div>
+        <div class="input-group"><label>Creatinine (mg/dL)</label><input type="number" id="bc-cr"></div>
+        <button class="calc-trigger" onclick="calcBunCr()">Calculate Ratio</button>
+        <div id="bc-res" class="result">Result...</div>
+    </div>
+
+    <!-- Child-Pugh -->
+    <div id="child" class="calculator-card">
+        <h3>Child-Pugh Score</h3>
+        <div class="input-group"><label>Bilirubin (mg/dL)</label><input type="number" id="cp-bili"></div>
+        <div class="input-group"><label>Albumin (g/dL)</label><input type="number" id="cp-alb"></div>
+        <div class="input-group"><label>INR</label><input type="number" id="cp-inr"></div>
+        <div class="input-group"><label>Ascites</label><select id="cp-asc"><option value="1">None</option><option value="2">Controlled</option><option value="3">Mod/Severe</option></select></div>
+        <div class="input-group"><label>Encephalopathy</label><select id="cp-enc"><option value="1">None</option><option value="2">Grade 1-2</option><option value="3">Grade 3-4</option></select></div>
+        <button class="calc-trigger" onclick="calcChild()">Calculate Score</button>
+        <div id="cp-res" class="result">Result...</div>
+    </div>
+
+    <!-- Maddrey DF -->
+    <div id="maddrey" class="calculator-card">
+        <h3>Maddrey Discriminant Function</h3>
+        <div class="input-group"><label>Prothrombin Time (sec)</label><input type="number" id="md-pt" step="0.1"></div>
+        <div class="input-group"><label>Control PT (sec)</label><input type="number" id="md-ctrl" step="0.1" value="12.0"></div>
+        <div class="input-group"><label>Bilirubin (mg/dL)</label><input type="number" id="md-bili" step="0.1"></div>
+        <button class="calc-trigger" onclick="calcMaddrey()">Calculate DF</button>
+        <div id="md-res" class="result">Result...</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-note" onclick="toggleModal(true)">
+        © 2026 Sol-Lee-Soft | <u>Disclaimer / Copyright</u>
+    </div>
+</div>
+
+<!-- Full Legal Modal -->
+<div id="legalModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color: var(--accent-color); margin-top:0;">Legal Disclaimer & License</h3>
+        <div class="disclaimer-text">
+            <p><strong>1. PROTOTYPE ONLY:</strong> This software is a personal project provided for informational, educational, and entertainment purposes only. It is not a certified medical device.</p>
+            <p><strong>2. NO WARRANTY:</strong> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</p>
+            <p><strong>3. LIMITATION OF LIABILITY:</strong> IN NO EVENT SHALL THE AUTHORS (SOL-LEE-SOFT) OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM THE USE OF THIS SOFTWARE.</p>
+            <p><strong>4. VERIFICATION REQUIRED:</strong> Users are strictly advised to verify all calculations with a qualified Medical Doctor before taking any clinical action. Use of this tool constitutes acceptance of all risks.</p>
+            <p><strong>5. LICENSE:</strong> Distributed under the MIT License principles for non-commercial, personal use.</p>
+        </div>
+        <button onclick="toggleModal(false)" style="width:100%; padding:12px; margin-top:15px; background: var(--accent-color); border:none; border-radius:6px; font-weight:bold; cursor:pointer; color: #000;">I UNDERSTAND</button>
+    </div>
+</div>
+
+<script>
+    function showCalc(id) {
+        document.querySelectorAll('.calculator-card').forEach(c => c.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function toggleModal(show) {
+        const modal = document.getElementById('legalModal');
+        modal.style.display = show ? 'flex' : 'none';
+    }
+
+    function validate(vals) { return !vals.some(v => isNaN(v) || v === "" || v <= 0); }
+
+    function calcMeldNa() {
+        let cr = parseFloat(document.getElementById('na-cr').value), bili = parseFloat(document.getElementById('na-bili').value);
+        let inr = parseFloat(document.getElementById('na-inr').value), na = parseFloat(document.getElementById('na-na').value);
+        if (!validate([cr, bili, inr, na])) return;
+        cr = Math.max(1, Math.min(4, cr)); bili = Math.max(1, bili); inr = Math.max(1, inr);
+        let meld = (0.957 * Math.log(cr) + 0.378 * Math.log(bili) + 1.120 * Math.log(inr) + 0.643) * 10;
+        meld = Math.round(meld);
+        if (meld > 11) {
+            na = Math.max(125, Math.min(137, na));
+            meld = meld + 1.32 * (137 - na) - (0.033 * meld * (137 - na));
+        }
+        document.getElementById('na-res').innerHTML = `<strong>MELD-Na: ${Math.round(meld)}</strong>`;
+    }
+
+    function calcMeld3() {
+        const sex = document.getElementById('m3-sex').value;
+        let cr = parseFloat(document.getElementById('m3-cr').value), bili = parseFloat(document.getElementById('m3-bili').value);
+        let inr = parseFloat(document.getElementById('m3-inr').value), na = parseFloat(document.getElementById('m3-na').value), alb = parseFloat(document.getElementById('m3-alb').value);
+        if (!validate([cr, bili, inr, na, alb])) return;
+        cr = Math.max(1, Math.min(4, cr)); bili = Math.max(1, bili); inr = Math.max(1, inr); na = Math.max(125, Math.min(137, na)); alb = Math.max(1.5, Math.min(3.5, alb));
+        let res = 1.33 * (sex === 'female' ? 1 : 0) + 4.56 * Math.log(bili) + 0.82 * (137 - na) - (0.24 * (137 - na) * Math.log(bili)) + 9.09 * Math.log(inr) + 11.14 * Math.log(cr) + 1.85 * (3.5 - alb) - (1.83 * (3.5 - alb) * Math.log(cr)) + 6;
+        document.getElementById('m3-res').innerHTML = `<strong>MELD 3.0: ${Math.round(res)}</strong>`;
+    }
+
+    function calcEGFR() {
+        const cr = parseFloat(document.getElementById('egfr-cr').value), age = parseFloat(document.getElementById('egfr-age').value), sex = document.getElementById('egfr-sex').value;
+        if (!validate([cr, age])) return;
+        let k = (sex === 'female') ? 0.7 : 0.9, a = (sex === 'female') ? -0.241 : -0.302, c = (sex === 'female') ? 1.012 : 1;
+        let egfr = 142 * Math.pow(Math.min(cr / k, 1), a) * Math.pow(Math.max(cr / k, 1), -1.2) * Math.pow(0.9938, age) * c;
+        document.getElementById('egfr-res').innerHTML = `<strong>eGFR: ${Math.round(egfr)}</strong>`;
+    }
+
+    function calcFib4() {
+        const age = parseFloat(document.getElementById('f4-age').value), ast = parseFloat(document.getElementById('f4-ast').value), alt = parseFloat(document.getElementById('f4-alt').value), plt = parseFloat(document.getElementById('f4-plt').value);
+        if (!validate([age, ast, alt, plt])) return;
+        let score = (age * ast) / (plt * Math.sqrt(alt));
+        document.getElementById('f4-res').innerHTML = `<strong>FIB-4: ${score.toFixed(2)}</strong>`;
+    }
+
+    function calcApri() {
+        const ast = parseFloat(document.getElementById('ap-ast').value), uln = parseFloat(document.getElementById('ap-uln').value), plt = parseFloat(document.getElementById('ap-plt').value);
+        if (!validate([ast, uln, plt])) return;
+        let score = ((ast / uln) * 100) / plt;
+        document.getElementById('ap-res').innerHTML = `<strong>APRI: ${score.toFixed(2)}</strong>`;
+    }
+
+    function calcBunCr() {
+        const bun = parseFloat(document.getElementById('bc-bun').value), cr = parseFloat(document.getElementById('bc-cr').value);
+        if (!validate([bun, cr])) return;
+        document.getElementById('bc-res').innerHTML = `<strong>Ratio: ${(bun / cr).toFixed(1)}:1</strong>`;
+    }
+
+    function calcChild() {
+        const bili = parseFloat(document.getElementById('cp-bili').value), alb = parseFloat(document.getElementById('cp-alb').value), inr = parseFloat(document.getElementById('cp-inr').value);
+        const asc = parseInt(document.getElementById('cp-asc').value), enc = parseInt(document.getElementById('cp-enc').value);
+        if (!validate([bili, alb, inr])) return;
+        let s = asc + enc;
+        s += (bili < 2) ? 1 : (bili <= 3 ? 2 : 3);
+        s += (alb > 3.5) ? 1 : (alb >= 2.8 ? 2 : 3);
+        s += (inr < 1.7) ? 1 : (inr <= 2.3 ? 2 : 3);
+        let cls = (s <= 6) ? "A" : (s <= 9 ? "B" : "C");
+        document.getElementById('cp-res').innerHTML = `<strong>Score: ${s} (Class ${cls})</strong>`;
+    }
+
+    function calcMaddrey() {
+        const pt = parseFloat(document.getElementById('md-pt').value), ctrl = parseFloat(document.getElementById('md-ctrl').value), bili = parseFloat(document.getElementById('md-bili').value);
+        if (!validate([pt, ctrl, bili])) return;
+        let df = 4.6 * (pt - ctrl) + bili;
+        document.getElementById('md-res').innerHTML = `<strong>DF: ${df.toFixed(1)}</strong>`;
+    }
+</script>
+</body>
+</html>
