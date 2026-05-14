@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sol-Lee-Soft Finance Toolkit</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --accent-color: #bb86fc; 
+            --error-color: #cf6679;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container { width: 100%; max-width: 450px; }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .calc-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .instruction {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 20px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .input-group { margin-bottom: 15px; }
+
+        label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: #bbb; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: white;
+            box-sizing: border-box;
+            font-size: 1.1rem;
+        }
+
+        button.calc-trigger {
+            width: 100%;
+            background: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            background: #333;
+            color: #ccc;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .result-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: #2c2c2c;
+            border-left: 4px solid var(--accent-color);
+            border-radius: 4px;
+            min-height: 50px;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .footer-note:hover { color: var(--accent-color); }
+
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 999;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 25px;
+            width: 85%;
+            max-width: 420px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .disclaimer-text {
+            font-size: 0.8rem;
+            color: #ccc;
+            text-align: justify;
+            line-height: 1.5;
+        }
+
+        .error { color: var(--error-color); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h2 style="margin:0; color: var(--accent-color);">Sol-Lee-Soft</h2>
+        <small>v1.0.0 | Universal Loan Multi-Tool</small>
+    </header>
+
+    <div class="calc-card">
+        <p class="instruction">Fill in <strong>any three</strong> fields.<br>Leave the target field <strong>blank</strong>.</p>
+        
+        <div class="input-group">
+            <label>Loan Amount (Principal) $</label>
+            <input type="number" id="principal" placeholder="0.00">
+        </div>
+
+        <div class="input-group">
+            <label>Annual Interest Rate (%)</label>
+            <input type="number" id="rate" step="0.01" placeholder="0.00">
+        </div>
+
+        <div class="input-group">
+            <label>Term (Months)</label>
+            <input type="number" id="months" placeholder="0">
+        </div>
+
+        <div class="input-group">
+            <label>Monthly Payment $</label>
+            <input type="number" id="payment" placeholder="0.00">
+        </div>
+
+        <button class="calc-trigger" onclick="calculateLoan()">Calculate Missing Value</button>
+        <button class="btn-secondary" onclick="resetFields()">Reset Calculator</button>
+
+        <div id="result" class="result-area">
+            <span style="color: #666;">Waiting for inputs...</span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-note" onclick="toggleModal(true)">
+        © 2026 Sol-Lee-Soft | <u>Disclaimer / Copyright</u>
+    </div>
+</div>
+
+<!-- Legal Modal with FULL licensing information -->
+<div id="legalModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color: var(--accent-color); margin-top:0;">Legal Disclaimer & License</h3>
+        
+        <div class="disclaimer-text">
+            <p><strong>1. PROTOTYPE ONLY:</strong> This software is a personal project provided for informational, educational, and entertainment purposes only. It is not a certified financial or medical device.</p>
+            
+            <p><strong>2. NO WARRANTY:</strong> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</p>
+            
+            <p><strong>3. LIMITATION OF LIABILITY:</strong> IN NO EVENT SHALL THE AUTHORS (SOL-LEE-SOFT) OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE.</p>
+            
+            <p><strong>4. VERIFICATION REQUIRED:</strong> Users are strictly advised to verify all calculations with a qualified professional (e.g., a Certified Financial Advisor) before taking any action. Use of this tool constitutes acceptance of all risks.</p>
+            
+            <p><strong>5. LICENSE:</strong> Distributed under the MIT License principles for non-commercial, personal use.</p>
+        </div>
+
+        <button onclick="toggleModal(false)" style="width:100%; padding:12px; margin-top:15px; background: var(--accent-color); border:none; border-radius:6px; font-weight:bold; cursor:pointer; color: #000;">I UNDERSTAND</button>
+    </div>
+</div>
+
+<script>
+    function toggleModal(show) {
+        const modal = document.getElementById('legalModal');
+        modal.style.display = show ? 'flex' : 'none';
+    }
+
+    function resetFields() {
+        ['principal', 'rate', 'months', 'payment'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('result').innerHTML = '<span style="color: #666;">Waiting for inputs...</span>';
+    }
+
+    function calculateLoan() {
+        const pInput = document.getElementById('principal');
+        const rInput = document.getElementById('rate');
+        const mInput = document.getElementById('months');
+        const pmtInput = document.getElementById('payment');
+        const resDiv = document.getElementById('result');
+
+        const P = parseFloat(pInput.value);
+        const R = parseFloat(rInput.value) / 100 / 12; 
+        const N = parseFloat(mInput.value);
+        const PMT = parseFloat(pmtInput.value);
+
+        const fields = [
+            { id: 'principal', val: P },
+            { id: 'rate', val: R },
+            { id: 'months', val: N },
+            { id: 'payment', val: PMT }
+        ];
+
+        const empty = fields.filter(f => isNaN(f.val));
+
+        if (empty.length !== 1) {
+            resDiv.innerHTML = `<span class="error">Error: Please fill exactly 3 fields to solve for the 4th.</span>`;
+            return;
+        }
+
+        const target = empty[0].id;
+
+        try {
+            if (target === 'payment') {
+                let pmt = P * (R * Math.pow(1 + R, N)) / (Math.pow(1 + R, N) - 1);
+                resDiv.innerHTML = `Monthly Payment: <strong>$${pmt.toFixed(2)}</strong>`;
+            } 
+            else if (target === 'principal') {
+                let principal = PMT * (Math.pow(1 + R, N) - 1) / (R * Math.pow(1 + R, N));
+                resDiv.innerHTML = `Max Loan Amount: <strong>$${principal.toFixed(2)}</strong>`;
+            } 
+            else if (target === 'months') {
+                if (PMT <= P * R) throw "Payment is too low to cover monthly interest.";
+                let months = Math.log(PMT / (PMT - P * R)) / Math.log(1 + R);
+                resDiv.innerHTML = `Term: <strong>${Math.ceil(months)} Months</strong><br><small>(${(months/12).toFixed(1)} years)</small>`;
+            } 
+            else if (target === 'rate') {
+                let rate = solveForRate(P, N, PMT);
+                resDiv.innerHTML = `Annual Interest Rate: <strong>${(rate * 12 * 100).toFixed(3)}%</strong>`;
+            }
+        } catch (e) {
+            resDiv.innerHTML = `<span class="error">${e}</span>`;
+        }
+    }
+
+    function solveForRate(principal, months, payment) {
+        let low = 0, high = 1.0, mid = 0;
+        for (let i = 0; i < 40; i++) {
+            mid = (low + high) / 2;
+            let guess = principal * (mid * Math.pow(1 + mid, months)) / (Math.pow(1 + mid, months) - 1);
+            if (guess > payment) high = mid; else low = mid;
+        }
+        return mid;
+    }
+</script>
+
+</body>
+</html>

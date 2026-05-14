@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sol-Lee-Soft Growth Toolkit</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --accent-color: #03dac6; /* Green for growth */
+            --error-color: #cf6679;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container { width: 100%; max-width: 450px; }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .calc-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .input-group { margin-bottom: 15px; }
+
+        label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: #bbb; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: white;
+            box-sizing: border-box;
+            font-size: 1.1rem;
+        }
+
+        button.calc-trigger {
+            width: 100%;
+            background: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            background: #333;
+            color: #ccc;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .result-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: #2c2c2c;
+            border-left: 4px solid var(--accent-color);
+            border-radius: 4px;
+            line-height: 1.6;
+        }
+
+        .compounding-note {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #777;
+            margin-top: 10px;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .footer-note:hover { color: var(--accent-color); }
+
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 999;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 25px;
+            width: 85%;
+            max-width: 420px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .error { color: var(--error-color); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h2 style="margin:0; color: var(--accent-color);">Sol-Lee-Soft</h2>
+        <small>v1.0.0 | Investment Compounder</small>
+    </header>
+
+    <div class="calc-card">
+        <div class="input-group">
+            <label>Initial Deposit (Principal) $</label>
+            <input type="number" id="principal" placeholder="0.00">
+        </div>
+
+        <div class="input-group">
+            <label>Annual Interest Rate (%)</label>
+            <input type="number" id="rate" step="0.01" placeholder="0.00">
+        </div>
+
+        <div class="input-group">
+            <label>Term (Months)</label>
+            <input type="number" id="months" placeholder="0">
+        </div>
+
+        <button class="calc-trigger" onclick="calculateGrowth()">Calculate Growth</button>
+        <button class="btn-secondary" onclick="resetFields()">Reset</button>
+
+        <div id="result" class="result-area">
+            <span style="color: #666;">Enter values above...</span>
+        </div>
+        
+        <p class="compounding-note">Note: Interest is compounded monthly.</p>
+    </div>
+
+    <!-- Consistent Footer -->
+    <div class="footer-note" onclick="toggleModal(true)">
+        © 2026 Sol-Lee-Soft | <u>Disclaimer / Copyright</u>
+    </div>
+</div>
+
+<!-- Standardized Legal Modal -->
+<div id="legalModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color: var(--accent-color); margin-top:0;">Legal Disclaimer & License</h3>
+        <div style="font-size: 0.8rem; color: #ccc; text-align: justify; line-height: 1.5;">
+            <p><strong>1. PROTOTYPE ONLY:</strong> This software is a personal project provided for informational, educational, and entertainment purposes only.</p>
+            <p><strong>2. NO WARRANTY:</strong> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.</p>
+            <p><strong>3. LIMITATION OF LIABILITY:</strong> IN NO EVENT SHALL THE AUTHORS (SOL-LEE-SOFT) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM THE USE OF THIS SOFTWARE.</p>
+            <p><strong>4. VERIFICATION:</strong> Users are advised to verify all calculations with a certified financial professional. Past performance does not guarantee future results.</p>
+            <p><strong>5. LICENSE:</strong> Distributed under MIT License principles for personal use.</p>
+        </div>
+        <button onclick="toggleModal(false)" style="width:100%; padding:12px; margin-top:15px; background: var(--accent-color); border:none; border-radius:6px; font-weight:bold; cursor:pointer; color: #000;">I UNDERSTAND</button>
+    </div>
+</div>
+
+<script>
+    function toggleModal(show) {
+        const modal = document.getElementById('legalModal');
+        modal.style.display = show ? 'flex' : 'none';
+    }
+
+    function resetFields() {
+        ['principal', 'rate', 'months'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('result').innerHTML = '<span style="color: #666;">Enter values above...</span>';
+    }
+
+    function calculateGrowth() {
+        const P = parseFloat(document.getElementById('principal').value);
+        const annualRate = parseFloat(document.getElementById('rate').value) / 100;
+        const M = parseFloat(document.getElementById('months').value);
+        const resDiv = document.getElementById('result');
+
+        if (isNaN(P) || isNaN(annualRate) || isNaN(M) || P < 0 || M <= 0) {
+            resDiv.innerHTML = `<span class="error">Error: Please enter valid positive numbers.</span>`;
+            return;
+        }
+
+        // Monthly compounding formula: A = P(1 + r/12)^m
+        const monthlyRate = annualRate / 12;
+        const futureValue = P * Math.pow(1 + monthlyRate, M);
+        const totalProfit = futureValue - P;
+        const monthlyProfit = totalProfit / M;
+
+        resDiv.innerHTML = `
+            Value at End of Term: <strong>$${futureValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong><br>
+            Total Profit: <span style="color: var(--accent-color);"><strong>$${totalProfit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></span><br>
+            Profit Per Month: <strong>$${monthlyProfit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong>
+        `;
+    }
+</script>
+
+</body>
+</html>
