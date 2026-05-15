@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sol-Lee-Soft | Documentation</title>
+    <title>Sol-Lee-Soft | Documentation & Methodology</title>
     <style>
         :root {
             --bg-color: #121212;
@@ -11,7 +11,6 @@
             --text-color: #e0e0e0;
             --accent-color: #bb86fc;
             --code-bg: #2a2a2a;
-            --error-color: #cf6679;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -25,86 +24,128 @@
             align-items: center;
         }
         .container { width: 100%; max-width: 800px; }
-        header { text-align: center; border-bottom: 1px solid #333; padding-bottom: 20px; margin-bottom: 40px; }
-        h1 { color: var(--accent-color); margin-bottom: 5px; }
+        
         h2 { color: var(--accent-color); border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 40px; }
-        h3 { color: #bbb; margin-top: 25px; }
+        h3 { color: #bbb; margin-top: 25px; font-size: 1.1rem; }
+        
         .doc-section { background: var(--card-bg); padding: 30px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
-        .license-box {
+        
+        .formula-box {
             background: var(--code-bg);
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
             font-family: "Courier New", Courier, monospace;
-            font-size: 0.85rem;
-            white-space: pre-wrap;
-            color: #ccc;
+            font-size: 0.95rem;
+            color: #03dac6; /* Green accent for math */
             border: 1px solid #444;
+            margin: 10px 0;
+            overflow-x: auto;
         }
-        .nav-link { color: var(--accent-color); text-decoration: none; font-weight: bold; }
-        .nav-link:hover { text-decoration: underline; }
-        .important-note {
-            border-left: 4px solid var(--error-color);
-            padding-left: 15px;
-            font-style: italic;
-            color: #ddd;
-            margin: 20px 0;
+        
+        .license-box {
+            background: var(--code-bg);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #aaa;
+            white-space: pre-wrap;
+            border: 1px solid #444;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>Sol-Lee-Soft Suite Documentation</h1>
-        <p>Version 1.0.0 | Digital Toolset Manual</p>
-        <a href="index.html" class="nav-link">← Back to Master Hub</a>
-    </header>
-
-    <div class="doc-section">
-        <h2>1. Overview & Good Faith Statement</h2>
-        <p>The Sol-Lee-Soft Digital Suite is a collection of static web tools designed to provide quick, accessible metrics for clinical, financial, and economic analysis.</p>
-        <div class="important-note">
-            "These tools were created in good faith with an intent to be accurate, however bugs can happen and we are not charging for these tools and the results are not guaranteed."
-        </div>
+    
+    <div style="width: 100%; display: block; border-bottom: 1px solid #444; padding-bottom: 15px; margin-bottom: 30px;">
+        <table style="width: 100%; border-collapse: collapse; border: none;">
+            <tr>
+                <td style="text-align: left; vertical-align: middle; border: none;">
+                    <h1 style="margin: 0; font-size: 2rem; color: #bb86fc;">Sol-Lee-Soft</h1>
+                    <small style="color: #999;">Methodology, Formulas & Licensing</small>
+                </td>
+                <td style="text-align: right; vertical-align: middle; border: none;">
+                    <a href="index.html" style="color: #bb86fc; text-decoration: none; font-size: 0.85rem; font-weight: bold; border: 1px solid #bb86fc; padding: 6px 12px; border-radius: 4px; display: inline-block;">
+                        ← BACK TO SUITE
+                    </a>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <div class="doc-section">
-        <h2>2. Operational Logic</h2>
+        <h2>System Methodology & Data Integrity</h2>
+        <p>Calculations provided by this suite adhere to standard financial and clinical logic. Discrepancies between this software and external banking or clinical systems typically arise from differing assumptions in <strong>compounding frequency</strong>, <strong>day-count conventions</strong>, or <strong>rounding steps</strong>.</p>
+        <ul>
+            <li><strong>Floating-Point Precision:</strong> All background logic is processed using high-precision 64-bit floating-point math.</li>
+            <li><strong>Final-Step Rounding:</strong> To prevent "rounding drift" across multi-step formulas, outputs are rounded (to the nearest cent or decimal) <em>only</em> at the final display stage.</li>
+        </ul>
+    </div>
+
+    <div class="doc-section">
+        <h2>1. Financial Logic & Formulas</h2>
         
-        <h3>Clinical Metrics Dashboard</h3>
-        <ul>
-            <li><strong>Methodology:</strong> Implements industry-standard clinical formulas (MELD-Na, MELD 3.0, eGFR CKD-EPI 2021).</li>
-            <li><strong>Constraint:</strong> Requires complete physiological data inputs to generate a score.</li>
-        </ul>
+        <h3>A. Growth & Compounding</h3>
+        <p>Assumes a standard 365-day year and 12 compounding periods per year.</p>
+        <div class="formula-box">Future Value (A) = P * (1 + r/n)^(nt)</div>
 
-        <h3>Universal Finance Tool</h3>
-        <ul>
-            <li><strong>Universal Solving:</strong> This tool is designed to solve for any single missing variable. Users must input exactly three values (Principal, Rate, Term, or Payment) and leave the target field blank to calculate the result.</li>
-            <li><strong>Technical Note:</strong> For non-linear variables such as Interest Rate, the script employs iterative mathematical approximations to reach a result.</li>
-        </ul>
+        <h3>B. Universal Finance (Amortization)</h3>
+        <p>Solves for the Monthly Payment (PMT) of a fixed-term, fixed-rate loan.</p>
+        <div class="formula-box">PMT = P * (r * (1 + r)^n) / ((1 + r)^n - 1)</div>
 
-        <h3>Inflation & Payout Toolkit</h3>
+        <h3>C. Inflation & Purchasing Power</h3>
+        <p>Future projections decay the value exponentially against the target rate.</p>
+        <div class="formula-box">Real Value = Target Payout / (1 + r)^Years</div>
+    </div>
+
+    <div class="doc-section">
+        <h2>2. Clinical Metrics (The 8 Diagnostic Tools)</h2>
+        <p>Hepatology and Renal formulas are mapped to validated physiological constants.</p>
+
+        <h3>1. eGFR (CKD-EPI 2021)</h3>
+        <p>The current race-neutral standard for estimating glomerular filtration rate.</p>
+        <div class="formula-box">eGFR = 142 * min(Cr/k, 1)^a * max(Cr/k, 1)^-1.2 * 0.9938^Age * [1.012 if female]</div>
+
+        <h3>2. BUN/Creatinine Ratio</h3>
+        <p>Used to assess the etiology of acute kidney injury or dehydration.</p>
+        <div class="formula-box">Ratio = Blood Urea Nitrogen (BUN) / Serum Creatinine</div>
+
+        <h3>3. Maddrey Discriminant Function (mDF)</h3>
+        <p>Assesses the severity and mortality risk of alcoholic hepatitis.</p>
+        <div class="formula-box">mDF = 4.6 * (Patient PT - Control PT) + Total Bilirubin</div>
+
+        <h3>4. FIB-4 Index</h3>
+        <p>A non-invasive scoring system for estimating liver fibrosis.</p>
+        <div class="formula-box">FIB-4 = (Age * AST) / (Platelets * √ALT)</div>
+
+        <h3>5. MELD (Original)</h3>
+        <p>The baseline Model for End-Stage Liver Disease.</p>
+        <div class="formula-box">MELD = 3.78*ln(Bilirubin) + 11.2*ln(INR) + 9.57*ln(Creatinine) + 6.43</div>
+
+        <h3>6. MELD-Na</h3>
+        <p>The sodium-adjusted evolution of the MELD score.</p>
+        <div class="formula-box">MELD-Na = MELD + 1.32*(137-Na) - [0.033*MELD*(137-Na)]</div>
+
+        <h3>7. MELD 3.0</h3>
+        <p>The updated 2023 scoring model accounting for albumin and sex disparities.</p>
+        <div class="formula-box">MELD 3.0 = 1.33(if female) + 4.56*ln(Bili) + 0.82(137-Na) - 0.24(137-Na)*ln(Bili) + 9.09*ln(INR) + 11.14*ln(Cr) + 1.85(3.5-Alb) - 1.83(3.5-Alb)*ln(Cr) + 6</div>
+
+        <h3>8. Child-Pugh Score</h3>
+        <p>A clinical summation (Class A, B, or C) where patients receive 1 to 3 points in five categories:</p>
         <ul>
-            <li><strong>Historical Data:</strong> Utilizes hardcoded Consumer Price Index (CPI) data for the years 1900 through 2025.</li>
-            <li><strong>Projection Phase:</strong> Values for the year 2026 and beyond are treated as projections. These calculations use the user-defined annual inflation estimate (defaulting to 3%) to compound value into the future.</li>
+            <li><strong>Total Bilirubin:</strong> &lt;2 (1pt) | 2-3 (2pts) | &gt;3 (3pts)</li>
+            <li><strong>Serum Albumin:</strong> &gt;3.5 (1pt) | 2.8-3.5 (2pts) | &lt;2.8 (3pts)</li>
+            <li><strong>INR:</strong> &lt;1.7 (1pt) | 1.7-2.3 (2pts) | &gt;2.3 (3pts)</li>
+            <li><strong>Ascites:</strong> None (1pt) | Mild (2pts) | Severe (3pts)</li>
+            <li><strong>Encephalopathy:</strong> None (1pt) | Grade I-II (2pts) | Grade III-IV (3pts)</li>
         </ul>
     </div>
 
     <div class="doc-section">
-        <h2>3. Master Legal Disclaimer</h2>
-        <p>By using the Sol-Lee-Soft suite, you acknowledge the following:</p>
-        <ul>
-            <li><strong>Non-Professional Advice:</strong> Sol-Lee-Soft is not a medical provider or a financial advisor. These tools are for educational use and do not constitute professional guidance.</li>
-            <li><strong>Local Processing:</strong> All data is processed locally in your browser. No personal information is collected, stored, or transmitted by Sol-Lee-Soft.</li>
-            <li><strong>Risk Acceptance:</strong> Use of these tools constitutes acceptance of all risks regarding calculation accuracy. Always verify critical results with a qualified professional.</li>
-        </ul>
-    </div>
-
-    <div class="doc-section">
-        <h2>4. Licensing</h2>
+        <h2>3. Licensing & Terms</h2>
         <p>This suite is distributed under the <strong>MIT License</strong>.</p>
-        <div class="license-box">
-MIT License
+        <div class="license-box">MIT License
 
 Copyright (c) 2026 Sol-Lee-Soft
 
@@ -124,13 +165,13 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-        </div>
+SOFTWARE.</div>
     </div>
 
     <footer style="text-align: center; padding: 20px; color: #444; font-size: 0.8rem;">
         © 2026 Sol-Lee-Soft | Discovery Bay, CA
     </footer>
+
 </div>
 
 </body>
