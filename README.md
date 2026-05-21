@@ -2,7 +2,7 @@
 
 A professional collection of client-side web tools designed for precision calculations in health, finance, and economic analysis. 
 
-### 🚀 [Launch the Live Suite](https://sol-lee-soft/github/tools/index.html) 
+### 🚀 [Launch the Live Suite](https://sol-lee-soft.github.io/Tools/) 
 
 ---
 
