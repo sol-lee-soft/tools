@@ -11,6 +11,7 @@
             --text-color: #e0e0e0;
             --accent-color: #bb86fc;
             --sub-text: #999;
+            --modal-overlay: rgba(10, 10, 10, 0.95);
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -36,7 +37,7 @@
             gap: 20px;
             margin-bottom: 40px;
         }
-        .tool-card {
+        .tool-card, .trigger-card {
             background: var(--card-bg);
             padding: 30px 20px;
             border-radius: 16px;
@@ -48,14 +49,123 @@
             flex-direction: column;
             align-items: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            box-sizing: border-box;
         }
-        .tool-card:hover {
+        .tool-card:hover, .trigger-card:hover {
             transform: translateY(-8px);
             border-color: var(--accent-color);
             box-shadow: 0 12px 30px rgba(187, 134, 252, 0.15);
         }
-        .tool-card h3 { margin: 15px 0 8px 0; font-size: 1.2rem; color: var(--accent-color); }
-        .tool-card p { font-size: 0.85rem; color: var(--sub-text); margin: 0; line-height: 1.4; }
+        .tool-card h3, .trigger-card h3 { margin: 15px 0 8px 0; font-size: 1.2rem; color: var(--accent-color); }
+        .tool-card p, .trigger-card p { font-size: 0.85rem; color: var(--sub-text); margin: 0; line-height: 1.4; }
+
+        /* Sub-Menu Modal Panel Styling */
+        .submenu-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-overlay);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .submenu-content {
+            background-color: var(--card-bg);
+            padding: 40px 25px;
+            border-radius: 16px;
+            max-width: 550px;
+            width: 100%;
+            border: 1px solid #444;
+            position: relative;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--sub-text);
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .submenu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        .submenu-card {
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .submenu-card:hover {
+            border-color: var(--accent-color);
+            background: #2a2a2a;
+        }
+
+        .submenu-card-text h4 {
+            margin: 0 0 4px 0;
+            color: var(--accent-color);
+            font-size: 1.05rem;
+        }
+
+        .submenu-card-text p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--sub-text);
+        }
+
+        .arrow {
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding-left: 10px;
+        }
+
+        /* Modal Sub-Manual Link Button */
+        .submenu-docs-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: transparent;
+            color: var(--accent-color);
+            border: 1px dashed var(--accent-color);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .submenu-docs-btn:hover {
+            background: rgba(187, 134, 252, 0.05);
+        }
 
         /* Legal/Docs Section */
         .legal-footer {
@@ -103,29 +213,31 @@
     <header>
         <span class="version-tag">Production Release</span>
         <h1>Sol-Lee-Soft</h1>
-        <p style="color: #888;">Precision Digital Suite v1.0.0</p>
+        <p style="color: #888;">Precision Digital Suite v1.1.0</p>
     </header>
 
     <div class="grid">
+        <a href="calculator-suite.html" class="tool-card">
+            <h3>Calculator Suite</h3>
+            <p>Launch Scientific, Office, and<br>Standard Utility Calculators</p>
+        </a>
+
         <a href="clinical.html" class="tool-card">
             <h3>Clinical Metrics</h3>
             <p>MELD-Na, MELD 3.0, eGFR<br>and Liver Health Diagnostics</p>
         </a>
-        <a href="finance.html" class="tool-card">
-            <h3>Universal Finance</h3>
-            <p>Calculate Loan Principal, Rates,<br>Terms, or Payments</p>
-        </a>
-        <a href="growth.html" class="tool-card">
-            <h3>Investment Growth</h3>
-            <p>Monthly Compounding and<br>Profit Margin Analysis</p>
-        </a>
-        <a href="inflation.html" class="tool-card">
-            <h3>Inflation Toolkit</h3>
-            <p>CPI Historical Search and<br>Future Payout Projections</p>
-        </a>
+
+        <div class="trigger-card" onclick="toggleFinancialSubmenu(true)">
+            <h3>Financial Tools</h3>
+            <p>Access Unified Loan Tools, Investment<br>Growth, and Inflation Analytics</p>
+        </div>
+
+        <div class="trigger-card" onclick="toggleMediaSubmenu(true)">
+            <h3>Media Tools</h3>
+            <p>Project Asset Managers, Continuity<br>Configurators, and Script Pipelines</p>
+        </div>
     </div>
 
-    <!-- Strategic Legal & Docs Section -->
     <div class="legal-footer">
         <p class="faith-statement">
             "These tools were created in good faith with an intent to be accurate, however bugs can happen and we are not charging for these tools and the results are not guaranteed."
@@ -136,6 +248,103 @@
         </p>
     </div>
 </div>
+
+<!-- Financial Submenu Modal -->
+<div id="financialSubmenu" class="submenu-panel">
+    <div class="submenu-content">
+        <button class="close-btn" onclick="toggleFinancialSubmenu(false)">&times;</button>
+        <h2 style="color: var(--accent-color); margin-top: 0; margin-bottom: 5px; font-size: 1.8rem;">Financial Systems</h2>
+        <p style="color: var(--sub-text); margin: 0 0 25px 0; font-size: 0.9rem;">Select an analytical model pipeline below:</p>
+        
+        <div class="submenu-grid">
+            <a href="finance.html" class="submenu-card">
+                <div class="submenu-card-text">
+                    <h4>Universal Finance</h4>
+                    <p>Solve missing values for Loan Principals, Rates, Terms, or Payments.</p>
+                </div>
+                <span class="arrow">→</span>
+            </a>
+            
+            <a href="growth.html" class="submenu-card">
+                <div class="submenu-card-text">
+                    <h4>Investment Growth</h4>
+                    <p>Track multi-asset monthly compound yields and margin analysis.</p>
+                </div>
+                <span class="arrow">→</span>
+            </a>
+            
+            <a href="inflation.html" class="submenu-card">
+                <div class="submenu-card-text">
+                    <h4>Inflation Toolkit</h4>
+                    <p>Analyze historical CPI indexes and calculate fixed future payout drops.</p>
+                </div>
+                <span class="arrow">→</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Media Submenu Modal -->
+<div id="mediaSubmenu" class="submenu-panel">
+    <div class="submenu-content">
+        <button class="close-btn" onclick="toggleMediaSubmenu(false)">&times;</button>
+        <h2 style="color: var(--accent-color); margin-top: 0; margin-bottom: 5px; font-size: 1.8rem;">Media Engineering</h2>
+        <p style="color: var(--sub-text); margin: 0 0 5px 0; font-size: 0.9rem;">Creative production pipelines, text editors, and asset tracking nodes.</p>
+        <p style="color: #666; margin: 0 0 20px 0; font-size: 0.8rem; font-style: italic; line-height: 1.4;">Data saves automatically to local sandbox memory profiles. Use private configurations or tracking utilities below:</p>
+        
+        <div class="submenu-grid">
+            <a href="continuity.html" class="submenu-card">
+                <div class="submenu-card-text">
+                    <h4>Continuity Configurator</h4>
+                    <p>Manage environmental constants, scene rules, and generation setups.</p>
+                </div>
+                <span class="arrow">→</span>
+            </a>
+
+            <a href="pipeline.html" class="submenu-card">
+                <div class="submenu-card-text">
+                    <h4>Script Pipeline</h4>
+                    <p>Interactive scene-by-scene script reader and dialogue reference tracking.</p>
+                </div>
+                <span class="arrow">→</span>
+            </a>
+
+            <a href="assets.html" class="submenu-card">
+                <div class="submenu-card-text">
+                    <h4>Project Asset Manager</h4>
+                    <p>Log development milestones, asset states, and local workspace links.</p>
+                </div>
+                <span class="arrow">→</span>
+            </a>
+        </div>
+
+        <a href="viewport.html" class="submenu-docs-btn">VIEW MEDIA SUBSYSTEM MANUAL</a>
+    </div>
+</div>
+
+<script>
+    function toggleFinancialSubmenu(show) {
+        const panel = document.getElementById('financialSubmenu');
+        panel.style.display = show ? 'flex' : 'none';
+    }
+
+    function toggleMediaSubmenu(show) {
+        const panel = document.getElementById('mediaSubmenu');
+        panel.style.display = show ? 'flex' : 'none';
+    }
+
+    window.onclick = function(event) {
+        const finPanel = document.getElementById('financialSubmenu');
+        const mediaPanel = document.getElementById('mediaSubmenu');
+        
+        if (event.target == finPanel) {
+            finPanel.style.display = "none";
+        }
+        if (event.target == mediaPanel) {
+            mediaPanel.style.display = "none";
+        }
+    }
+</script>
 
 </body>
 </html>

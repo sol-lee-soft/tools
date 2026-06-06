@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sol-Lee-Soft | Project Asset Manager</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --accent-color: #bb86fc;
+            --sub-text: #999;
+            --border-color: #333;
+            --success-color: #03dac6;
+            --warning-color: #cf6679;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { width: 100%; max-width: 750px; }
+        
+        header { margin-top: 20px; margin-bottom: 30px; text-align: center; position: relative; }
+        .back-link {
+            position: absolute;
+            left: 0;
+            top: 12px;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .back-link:hover { text-decoration: underline; }
+        h1 { color: var(--accent-color); margin-bottom: 5px; font-size: 2.2rem; letter-spacing: -0.5px; }
+        .subtitle { color: var(--sub-text); margin: 0; font-size: 0.95rem; }
+
+        .controls-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .form-group { flex: 1.2; text-align: left; }
+        .form-group-sm { flex: 0.5; text-align: left; }
+        label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 6px; color: #aaa; text-transform: uppercase; }
+        input, select {
+            width: 100%;
+            background: #252525;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            color: white;
+            box-sizing: border-box;
+            font-size: 0.9rem;
+            height: 41px;
+        }
+        input:focus, select:focus { border-color: var(--accent-color); outline: none; }
+        
+        .browse-wrapper { position: relative; display: inline-block; width: 100%; }
+        .file-input { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+        .btn-browse {
+            display: flex; align-items: center; justify-content: center; background: #2d2d2d;
+            border: 1px dashed var(--accent-color); color: var(--accent-color); border-radius: 6px;
+            padding: 10px; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; box-sizing: border-box; height: 41px; transition: background 0.2s;
+        }
+        .browse-wrapper:hover .btn-browse { background: rgba(187, 134, 252, 0.05); }
+
+        .btn-add {
+            background: var(--accent-color); color: #121212; border: none; padding: 11px 15px;
+            border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.85rem; transition: 0.2s; height: 41px;
+        }
+        .btn-add:hover { opacity: 0.9; }
+
+        .btn-clear-all {
+            background: transparent; border: 1px solid var(--warning-color); color: var(--warning-color);
+            padding: 11px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.85rem; transition: 0.2s; height: 41px;
+        }
+        .btn-clear-all:hover { background: rgba(207, 102, 121, 0.1); }
+
+        .asset-table-container {
+            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+        th, td { padding: 14px 18px; border-bottom: 1px solid #2d2d2d; }
+        th { background: #181818; color: var(--accent-color); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
+        tr:last-child td { border-bottom: none; }
+        
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .badge-done { background: rgba(3, 218, 198, 0.15); color: var(--success-color); }
+        .badge-wip { background: rgba(187, 134, 252, 0.15); color: var(--accent-color); }
+        .badge-pending { background: rgba(207, 102, 121, 0.15); color: var(--warning-color); }
+
+        .path-text { font-family: 'Courier New', Courier, monospace; color: #888; font-size: 0.8rem; cursor: pointer; transition: color 0.2s; }
+        .path-text:hover { color: var(--accent-color); }
+
+        .action-delete { background: transparent; border: none; color: #666; cursor: pointer; font-size: 1.1rem; transition: color 0.2s; }
+        .action-delete:hover { color: var(--warning-color); }
+        
+        .empty-state { padding: 30px; text-align: center; color: var(--sub-text); font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <a href="index.html" class="back-link">← DASHBOARD</a>
+        <h1>Project Asset Manager</h1>
+        <p class="subtitle">Workspace Inventory & Render Status Pipeline</p>
+    </header>
+
+    <div class="controls-panel">
+        <div class="form-group-sm" style="flex: 0.4;">
+            <label>Find File</label>
+            <div class="browse-wrapper">
+                <div class="btn-browse">Browse...</div>
+                <input type="file" id="fileBrowser" class="file-input" onchange="handleFileSelect(this)">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="assetName">Asset / File Name</label>
+            <input type="text" id="assetName" placeholder="Filename auto-fills or type here...">
+        </div>
+        <div class="form-group-sm">
+            <label for="assetType">Type</label>
+            <select id="assetType">
+                <option value="Video">Video</option>
+                <option value="Audio">Audio</option>
+                <option value="Model">Model / Preset</option>
+                <option value="Script">Script/Doc</option>
+            </select>
+        </div>
+        <div class="form-group-sm">
+            <label for="assetStatus">Status</label>
+            <select id="assetStatus">
+                <option value="Complete">Complete</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Pending">Pending</option>
+            </select>
+        </div>
+        <button class="btn-add" onclick="addAsset()">Track</button>
+        <button class="btn-clear-all" onclick="clearWorkspace()" title="Clear Entire Asset Workspace">Wipe All</button>
+    </div>
+
+    <div class="asset-table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Asset Name</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Workspace Context (Click to Copy)</th>
+                    <th style="width: 40px;"></th>
+                </tr>
+            </thead>
+            <tbody id="assetTableBody">
+                <!-- Loaded via LocalStorage -->
+            </tbody>
+        </table>
+        <div id="emptyNotification" class="empty-state" style="display: none;">No tracked assets found. Browse or enter a file above to begin.</div>
+    </div>
+</div>
+
+<script>
+    let assetInventory = [];
+
+    window.onload = function() {
+        // Force-clear ancient debug assets if any exist
+        const cache = localStorage.getItem('solLeeSoftAssets');
+        if (cache && cache.includes('launch_sequence_heavy_bfp16')) {
+            localStorage.removeItem('solLeeSoftAssets');
+        }
+        loadAssetsFromMemory();
+    };
+
+    function handleFileSelect(input) {
+        if (input.files && input.files.length > 0) {
+            const filename = input.files[0].name;
+            document.getElementById('assetName').value = filename;
+            
+            const extension = filename.split('.').pop().toLowerCase();
+            const typeSelect = document.getElementById('assetType');
+            
+            if (['mp4', 'mkv', 'avi', 'mov', 'webm'].includes(extension)) {
+                typeSelect.value = 'Video';
+            } else if (['wav', 'mp3', 'flac', 'ogg', 'm4a'].includes(extension)) {
+                typeSelect.value = 'Audio';
+            } else if (['json', 'txt', 'pdf', 'html'].includes(extension)) {
+                typeSelect.value = 'Script';
+            } else if (['safetensors', 'ckpt', 'pt', 'pth', 'yaml'].includes(extension)) {
+                typeSelect.value = 'Model';
+            }
+        }
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('assetTableBody');
+        const emptyNotice = document.getElementById('emptyNotification');
+        tbody.innerHTML = ''; 
+
+        if (assetInventory.length === 0) {
+            emptyNotice.style.display = 'block';
+            return;
+        } else {
+            emptyNotice.style.display = 'none';
+        }
+
+        assetInventory.forEach((asset, index) => {
+            const row = document.createElement('tr');
+            let badgeClass = 'badge-pending';
+            if (asset.status === 'Complete') badgeClass = 'badge-done';
+            if (asset.status === 'In Progress') badgeClass = 'badge-wip';
+
+            let systemFolder = 'Renders';
+            if (asset.type === 'Audio') systemFolder = 'Audio';
+            if (asset.type === 'Model') systemFolder = 'Models';
+            if (asset.type === 'Script') systemFolder = 'Docs';
+
+            row.innerHTML = `
+                <td style="font-weight: 500;">${asset.name}</td>
+                <td>${asset.type}</td>
+                <td><span class="badge ${badgeClass}">${asset.status}</span></td>
+                <td><span class="path-text" onclick="copyPath(this)">D:\\\\Workspace\\\\${systemFolder}\\\\</span></td>
+                <td><button class="action-delete" onclick="deleteAsset(${index})">&times;</button></td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function addAsset() {
+        const name = document.getElementById('assetName').value.trim();
+        const type = document.getElementById('assetType').value;
+        const status = document.getElementById('assetStatus').value;
+        
+        if (!name) {
+            alert('Please select a file or enter an asset name.');
+            return;
+        }
+
+        assetInventory.push({ name, type, status });
+        saveAssetsToMemory();
+        renderTable();
+        
+        document.getElementById('assetName').value = '';
+        document.getElementById('fileBrowser').value = '';
+    }
+
+    function deleteAsset(index) {
+        assetInventory.splice(index, 1);
+        saveAssetsToMemory();
+        renderTable();
+    }
+
+    function clearWorkspace() {
+        if(confirm("Are you sure you want to clear out your asset tracking workspace?")) {
+            assetInventory = [];
+            saveAssetsToMemory();
+            renderTable();
+        }
+    }
+
+    function saveAssetsToMemory() {
+        localStorage.setItem('solLeeSoftAssets', JSON.stringify(assetInventory));
+    }
+
+    function loadAssetsFromMemory() {
+        const stored = localStorage.getItem('solLeeSoftAssets');
+        if (stored) {
+            assetInventory = JSON.parse(stored);
+        } else {
+            assetInventory = []; // Starts clean out of the gate
+        }
+        renderTable();
+    }
+
+    function copyPath(element) {
+        const path = element.innerText;
+        navigator.clipboard.writeText(path).then(() => {
+            const originalColor = element.style.color;
+            element.style.color = '#03dac6';
+            element.innerText = 'Copied Path!';
+            setTimeout(() => {
+                element.style.color = originalColor;
+                element.innerText = path;
+            }, 1000);
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sol-Lee-Soft | Script Pipeline</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --accent-color: #bb86fc;
+            --sub-text: #999;
+            --border-color: #333;
+            --sidebar-width: 260px;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color); color: var(--text-color); margin: 0;
+            display: flex; height: 100vh; overflow: hidden;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width); background: #181818; border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; padding: 20px 10px; box-sizing: border-box; flex-shrink: 0;
+        }
+        .sidebar h2 { font-size: 0.8rem; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 20px 10px; }
+        
+        .scene-list { flex-grow: 1; overflow-y: auto; margin-bottom: 15px; }
+        
+        .nav-link-wrapper { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; border-radius: 8px; padding-right: 5px; }
+        .nav-link-wrapper:hover { background: #222; }
+        
+        .nav-link {
+            padding: 12px 10px 12px 15px; color: var(--sub-text); text-decoration: none; font-size: 0.9rem;
+            cursor: pointer; flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .nav-link-wrapper.active { background: var(--card-bg); }
+        .nav-link-wrapper.active .nav-link { color: white; border-left: 3px solid var(--accent-color); padding-left: 12px; }
+        
+        .btn-del-scene { background: transparent; border: none; color: #555; cursor: pointer; font-size: 1rem; padding: 5px; }
+        .btn-del-scene:hover { color: #cf6679; }
+
+        .btn-add-scene {
+            background: transparent; border: 1px dashed var(--accent-color); color: var(--accent-color);
+            padding: 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; text-align: center; margin: 0 5px 10px 5px;
+        }
+        .btn-add-scene:hover { background: rgba(187, 134, 252, 0.05); }
+
+        .btn-reset-pipeline {
+            background: transparent; border: 1px solid #cf6679; color: #cf6679;
+            padding: 8px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; cursor: pointer; text-align: center; margin: 0 5px 15px 5px;
+        }
+        .btn-reset-pipeline:hover { background: rgba(207, 102, 121, 0.08); }
+        
+        .back-dash { border-top: 1px solid #2d2d2d; padding-top: 15px; color: var(--accent-color); font-weight: bold; font-size: 0.85rem; text-align: center; text-decoration: none; }
+
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; height: 100%; background: var(--bg-color); }
+        
+        header { padding: 20px 40px; border-bottom: 1px solid var(--border-color); background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; }
+        .title-input { background: transparent; border: none; color: white; font-size: 1.6rem; font-weight: bold; width: 60%; }
+        .title-input:focus { outline: none; border-bottom: 1px solid var(--accent-color); }
+        .project-tag { font-size: 0.8rem; color: var(--accent-color); font-weight: bold; text-transform: uppercase; }
+
+        .editor-container { padding: 30px; flex-grow: 1; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; }
+        label { font-size: 0.8rem; font-weight: bold; text-transform: uppercase; color: var(--sub-text); letter-spacing: 0.5px; }
+        
+        textarea {
+            width: 100%; flex-grow: 1; background: #161616; border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 25px; color: #a8ffb2; font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem; line-height: 1.6; box-sizing: border-box; resize: none;
+        }
+        textarea:focus { border-color: var(--accent-color); outline: none; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Script Pipeline</h2>
+    <div class="scene-list" id="sceneListContainer">
+        <!-- Loaded via JS -->
+    </div>
+    <button class="btn-add-scene" onclick="createNewScene()">+ ADD NEW SCENE</button>
+    <button class="btn-reset-pipeline" onclick="clearAllPipeline()">WIPE ALL SCENES</button>
+    <a href="index.html" class="back-dash">← BACK TO DASHBOARD</a>
+</div>
+
+<div class="main-content">
+    <header>
+        <input type="text" id="sceneTitleEditor" class="title-input" oninput="updateActiveSceneTitle(this.value)">
+        <span class="project-tag">Script Editor</span>
+    </header>
+
+    <div class="editor-container">
+        <label>Screenplay Content (Courier Format)</label>
+        <textarea id="scriptTextEditor" oninput="updateActiveScriptText(this.value)" placeholder="No script active. Click '+ ADD NEW SCENE' in the sidebar to build your first sequence layout."></textarea>
+    </div>
+</div>
+
+<script>
+    let scriptDatabase = [];
+    let activeIndex = 0;
+
+    window.onload = function() {
+        // Force-clear old script fragments from previous tests
+        const cache = localStorage.getItem('solLeeSoftScripts');
+        if (cache && cache.includes('Launch Sequence')) {
+            localStorage.removeItem('solLeeSoftScripts');
+        }
+        loadScriptsFromStorage();
+    };
+
+    function loadScriptsFromStorage() {
+        const stored = localStorage.getItem('solLeeSoftScripts');
+        if (stored) {
+            scriptDatabase = JSON.parse(stored);
+        } else {
+            scriptDatabase = []; // Strictly empty at baseline launch
+            saveScriptsToStorage();
+        }
+        renderSidebar();
+        loadActiveScene();
+    }
+
+    function saveScriptsToStorage() {
+        localStorage.setItem('solLeeSoftScripts', JSON.stringify(scriptDatabase));
+    }
+
+    function renderSidebar() {
+        const container = document.getElementById('sceneListContainer');
+        container.innerHTML = '';
+
+        scriptDatabase.forEach((scene, index) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = `nav-link-wrapper ${index === activeIndex ? 'active' : ''}`;
+            wrapper.innerHTML = `
+                <div class="nav-link" onclick="selectScene(${index})">${scene.title}</div>
+                <button class="btn-del-scene" onclick="deleteScene(${index}, event)">&times;</button>
+            `;
+            container.appendChild(wrapper);
+        });
+    }
+
+    function loadActiveScene() {
+        if (scriptDatabase.length > 0) {
+            document.getElementById('sceneTitleEditor').value = scriptDatabase[activeIndex].title;
+            document.getElementById('scriptTextEditor').value = scriptDatabase[activeIndex].text;
+            document.getElementById('scriptTextEditor').disabled = false;
+        } else {
+            document.getElementById('sceneTitleEditor').value = "No Scenes Active";
+            document.getElementById('scriptTextEditor').value = "";
+            document.getElementById('scriptTextEditor').placeholder = "No script active. Click '+ ADD NEW SCENE' in the sidebar to build your first sequence layout.";
+            document.getElementById('scriptTextEditor').disabled = true;
+        }
+    }
+
+    function selectScene(index) {
+        activeIndex = index;
+        renderSidebar();
+        loadActiveScene();
+    }
+
+    function createNewScene() {
+        const num = scriptDatabase.length + 1;
+        scriptDatabase.push({
+            title: `Scene 0${num}`,
+            text: "INT. SCENE HEADLINE - DAY\n\nBegin screenplay composition context..."
+        });
+        activeIndex = scriptDatabase.length - 1;
+        saveScriptsToStorage();
+        renderSidebar();
+        loadActiveScene();
+    }
+
+    function deleteScene(index, event) {
+        event.stopPropagation();
+        scriptDatabase.splice(index, 1);
+        if (activeIndex >= scriptDatabase.length) {
+            activeIndex = Math.max(0, scriptDatabase.length - 1);
+        }
+        saveScriptsToStorage();
+        renderSidebar();
+        loadActiveScene();
+    }
+
+    function clearAllPipeline() {
+        if(confirm("Are you sure you want to delete all script scenes from browser storage?")) {
+            scriptDatabase = [];
+            activeIndex = 0;
+            saveScriptsToStorage();
+            renderSidebar();
+            loadActiveScene();
+        }
+    }
+
+    function updateActiveSceneTitle(val) {
+        if (scriptDatabase[activeIndex]) {
+            scriptDatabase[activeIndex].title = val;
+            saveScriptsToStorage();
+            const activeWrapper = document.querySelector('.nav-link-wrapper.active .nav-link');
+            if (activeWrapper) activeWrapper.innerText = val;
+        }
+    }
+
+    function updateActiveScriptText(val) {
+        if (scriptDatabase[activeIndex]) {
+            scriptDatabase[activeIndex].text = val;
+            saveScriptsToStorage();
+        }
+    }
+</script>
+
+</body>
+</html>

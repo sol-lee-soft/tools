@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sol-Lee-Soft | Continuity Configurator</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --accent-color: #bb86fc;
+            --sub-text: #999;
+            --border-color: #333;
+            --success-color: #03dac6;
+            --warning-color: #cf6679;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color); color: var(--text-color); margin: 0;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px;
+        }
+        .container { width: 100%; max-width: 700px; }
+        
+        header { margin-top: 20px; margin-bottom: 30px; text-align: center; position: relative; }
+        .back-link {
+            position: absolute; left: 0; top: 12px; color: var(--accent-color);
+            text-decoration: none; font-size: 0.9rem; font-weight: bold;
+        }
+        .back-link:hover { text-decoration: underline; }
+        h1 { color: var(--accent-color); margin-bottom: 5px; font-size: 2.2rem; letter-spacing: -0.5px; }
+        .subtitle { color: var(--sub-text); margin: 0; font-size: 0.95rem; }
+
+        .config-section {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        h2 { margin-top: 0; margin-bottom: 20px; font-size: 1.3rem; color: var(--accent-color); border-bottom: 1px solid #2d2d2d; padding-bottom: 10px; }
+        
+        .form-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: #ccc; }
+        input[type="text"], textarea {
+            width: 100%; background: #252525; border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 12px; color: white; font-family: inherit;
+            font-size: 0.9rem; box-sizing: border-box; transition: border-color 0.2s;
+        }
+        input[type="text"]:focus, textarea:focus { border-color: var(--accent-color); outline: none; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        .toggle-group {
+            display: flex; align-items: center; justify-content: space-between;
+            background: #252525; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 10px;
+        }
+        .toggle-label { font-size: 0.85rem; color: #bbb; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #444; transition: .3s; border-radius: 22px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 16px; width: 16px;
+            left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent-color); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .btn-container { display: flex; gap: 15px; margin-bottom: 30px; }
+        .btn {
+            flex: 1; padding: 14px; border-radius: 30px; font-weight: bold; font-size: 0.9rem;
+            cursor: pointer; border: none; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .btn-primary { background: var(--accent-color); color: #121212; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-secondary { background: transparent; color: var(--accent-color); border: 1px solid var(--accent-color); }
+        .btn-secondary:hover { background: rgba(187, 134, 252, 0.08); transform: translateY(-2px); }
+        .btn-danger { background: transparent; color: var(--warning-color); border: 1px solid var(--warning-color); }
+        .btn-danger:hover { background: rgba(207, 102, 121, 0.1); transform: translateY(-2px); }
+
+        .output-box { background: #0a0a0a; border: 1px solid #222; border-radius: 12px; padding: 20px; text-align: left; position: relative; }
+        .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .output-title { font-size: 0.8rem; color: var(--sub-text); font-weight: bold; text-transform: uppercase; }
+        .copy-toast { color: var(--success-color); font-size: 0.8rem; display: none; }
+        pre { margin: 0; white-space: pre-wrap; word-wrap: break-word; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; color: #a8ffb2; line-height: 1.5; }
+
+        @media (max-width: 600px) {
+            .grid-2 { grid-template-columns: 1fr; gap: 0; }
+            header { padding-top: 40px; }
+            .back-link { top: 0; width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <a href="index.html" class="back-link">← DASHBOARD</a>
+        <h1>Continuity Configurator</h1>
+        <p class="subtitle">System Parameter Lock & Rule Validation Pipeline</p>
+    </header>
+
+    <div class="config-section">
+        <h2>Scene & Environment Constraints</h2>
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="projectName">Active Project Name</label>
+                <input type="text" id="projectName" oninput="saveConfig()" placeholder="e.g., Project Alpha">
+            </div>
+            <div class="form-group">
+                <label for="sceneIdentifier">Scene Reference / Key</label>
+                <input type="text" id="sceneIdentifier" oninput="saveConfig()" placeholder="e.g., SCENE_01">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="environmentalConstants">Environmental & Visual Constants</label>
+            <textarea id="environmentalConstants" rows="3" oninput="saveConfig()" placeholder="Define persistent lighting, object states, colors, or structural shapes..."></textarea>
+        </div>
+    </div>
+
+    <div class="config-section">
+        <h2>Generation Pipe Controls</h2>
+        <div class="grid-2">
+            <div>
+                <div class="toggle-group">
+                    <span class="toggle-label">Strict Rule Validation</span>
+                    <label class="switch">
+                        <input type="checkbox" id="ruleValidation" onchange="saveConfig()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-group">
+                    <span class="toggle-label">Lock Architectural Integrity</span>
+                    <label class="switch">
+                        <input type="checkbox" id="lockAssets" onchange="saveConfig()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div>
+                <div class="toggle-group">
+                    <span class="toggle-label">VRAM Optimization Level</span>
+                    <label class="switch">
+                        <input type="checkbox" id="vramOptimize" onchange="saveConfig()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-group">
+                    <span class="toggle-label">Prevent Image/Video Auto-Requests</span>
+                    <label class="switch">
+                        <input type="checkbox" id="blockMediaQuota" onchange="saveConfig()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-container">
+        <button class="btn btn-primary" onclick="compileRules()">Compile Rule Block</button>
+        <button class="btn btn-secondary" onclick="exportConfig()">Export (JSON)</button>
+        <button class="btn btn-danger" onclick="clearWorkspace()">Wipe All</button>
+    </div>
+
+    <div class="output-box">
+        <div class="output-header">
+            <span class="output-title">Compiled Continuity Parameters</span>
+            <span id="copyToast" class="copy-toast">Copied to Clipboard!</span>
+        </div>
+        <pre id="outputContent">Click "Compile Rule Block" to evaluate system parameters...</pre>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        // Clear out old test footprints if any exist on fresh execution
+        const cache = localStorage.getItem('solLeeSoftContinuity');
+        if (cache && cache.includes('Ticket to the Moon')) {
+            localStorage.removeItem('solLeeSoftContinuity');
+        }
+        loadConfig();
+    };
+
+    function generateRulesText() {
+        const pName = document.getElementById('projectName').value || 'UNNAMED_PROJECT';
+        const sIdent = document.getElementById('sceneIdentifier').value || 'UNDEFINED_SCENE';
+        const envConstants = document.getElementById('environmentalConstants').value || 'None specified.';
+        
+        const strictVal = document.getElementById('ruleValidation').checked ? 'ENABLED' : 'DISABLED';
+        const archLock = document.getElementById('lockAssets').checked ? 'ACTIVE' : 'INACTIVE';
+        const vramOpt = document.getElementById('vramOptimize').checked ? 'MAX' : 'STANDARD';
+        const blockMedia = document.getElementById('blockMediaQuota').checked ? 'STRICT_BLOCK' : 'ALLOW';
+
+        return `[CONTINUITY_CONFIG_BLOCK]\nPROJECT_NAME: ${pName}\nSCENE_REF: ${sIdent}\n--------------------------------------------------\nCRITICAL CORE DIRECTIVES:\n- STRICT RULE VALIDATION: ${strictVal}\n- ARCHITECTURAL INTEGRITY LOCK: ${archLock}\n- FILE GENERATION / SYSTEM CAP: ${blockMedia}\n- MEMORY RESOURCE PROFILE: ${vramOpt}\n--------------------------------------------------\nENVIRONMENTAL & VISUAL CONSTANTS:\n${envConstants}\n[END_BLOCK]`;
+    }
+
+    function compileRules() {
+        const text = generateRulesText();
+        document.getElementById('outputContent').innerText = text;
+        navigator.clipboard.writeText(text).then(() => {
+            const toast = document.getElementById('copyToast');
+            toast.style.display = 'inline';
+            setTimeout(() => { toast.style.display = 'none'; }, 2000);
+        });
+    }
+
+    function saveConfig() {
+        const configObj = {
+            project: document.getElementById('projectName').value,
+            scene: document.getElementById('sceneIdentifier').value,
+            constants: document.getElementById('environmentalConstants').value,
+            ruleValidation: document.getElementById('ruleValidation').checked,
+            lockAssets: document.getElementById('lockAssets').checked,
+            vramOptimize: document.getElementById('vramOptimize').checked,
+            blockMediaQuota: document.getElementById('blockMediaQuota').checked
+        };
+        localStorage.setItem('solLeeSoftContinuity', JSON.stringify(configObj));
+    }
+
+    function loadConfig() {
+        const stored = localStorage.getItem('solLeeSoftContinuity');
+        if (stored) {
+            const config = JSON.parse(stored);
+            document.getElementById('projectName').value = config.project || '';
+            document.getElementById('sceneIdentifier').value = config.scene || '';
+            document.getElementById('environmentalConstants').value = config.constants || '';
+            document.getElementById('ruleValidation').checked = config.ruleValidation ?? true;
+            document.getElementById('lockAssets').checked = config.lockAssets ?? true;
+            document.getElementById('vramOptimize').checked = config.vramOptimize ?? false;
+            document.getElementById('blockMediaQuota').checked = config.blockMediaQuota ?? true;
+        } else {
+            resetFormDefaults();
+        }
+    }
+
+    function resetFormDefaults() {
+        document.getElementById('projectName').value = '';
+        document.getElementById('sceneIdentifier').value = '';
+        document.getElementById('environmentalConstants').value = '';
+        document.getElementById('ruleValidation').checked = true;
+        document.getElementById('lockAssets').checked = true;
+        document.getElementById('vramOptimize').checked = false;
+        document.getElementById('blockMediaQuota').checked = true;
+        document.getElementById('outputContent').innerText = 'Click "Compile Rule Block" to evaluate system parameters...';
+    }
+
+    function clearWorkspace() {
+        if(confirm("Are you sure you want to clear your current continuity profile parameters?")) {
+            localStorage.removeItem('solLeeSoftContinuity');
+            resetFormDefaults();
+        }
+    }
+
+    function exportConfig() {
+        const rules = generateRulesText();
+        const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(rules);
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `continuity_config.txt`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+</script>
+
+</body>
+</html>
