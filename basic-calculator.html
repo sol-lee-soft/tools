@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sol-Lee-Soft Office Calculator</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .calculator {
+            background-color: #1e1e1e;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            width: 340px;
+        }
+        .header {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .display-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .memory-indicator {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            font-size: 14px;
+            color: #ff9800;
+            font-weight: bold;
+        }
+        .display {
+            width: 100%;
+            height: 80px;
+            background-color: #2d2d2d;
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 32px;
+            text-align: right;
+            padding: 25px 15px 10px 15px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        button {
+            padding: 16px 0;
+            font-size: 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #333333;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        button:hover { background-color: #444444; }
+        button:active { background-color: #555555; }
+        
+        /* Functional Colors */
+        .memory { background-color: #4a4a4a; color: #ffb74d; font-size: 16px; font-weight: bold; }
+        .memory:hover { background-color: #5a5a5a; }
+        .func { background-color: #2a4d69; }
+        .func:hover { background-color: #3b698e; }
+        .operator { background-color: #ff9800; color: #121212; font-weight: bold; font-size: 24px; }
+        .operator:hover { background-color: #ffb74d; }
+        .clear { background-color: #d32f2f; font-weight: bold; }
+        .clear:hover { background-color: #ef5350; }
+        .equals { background-color: #388e3c; font-weight: bold; font-size: 24px; }
+        .equals:hover { background-color: #4caf50; }
+    </style>
+</head>
+<body>
+
+<div class="calculator">
+    <div class="header">Sol-Lee-Soft Office</div>
+    
+    <div class="display-container">
+        <div id="memory-indicator" class="memory-indicator"></div>
+        <input type="text" id="display" class="display" disabled>
+    </div>
+    
+    <div class="buttons">
+        <button class="memory" onclick="memoryClear()">MC</button>
+        <button class="memory" onclick="memoryRecall()">MR</button>
+        <button class="memory" onclick="memoryAdd()">M+</button>
+        <button class="memory" onclick="memorySubtract()">M-</button>
+
+        <button class="clear" onclick="clearDisplay()">C</button>
+        <button class="clear" onclick="deleteLast()">DEL</button>
+        <button class="func" onclick="appendValue('(')">(</button>
+        <button class="func" onclick="appendValue(')')">)</button>
+
+        <button onclick="appendValue('7')">7</button>
+        <button onclick="appendValue('8')">8</button>
+        <button onclick="appendValue('9')">9</button>
+        <button class="operator" onclick="appendValue('/')">÷</button>
+
+        <button onclick="appendValue('4')">4</button>
+        <button onclick="appendValue('5')">5</button>
+        <button onclick="appendValue('6')">6</button>
+        <button class="operator" onclick="appendValue('*')">×</button>
+
+        <button onclick="appendValue('1')">1</button>
+        <button onclick="appendValue('2')">2</button>
+        <button onclick="appendValue('3')">3</button>
+        <button class="operator" onclick="appendValue('-')">-</button>
+
+        <button onclick="appendValue('0')">0</button>
+        <button onclick="appendValue('.')">.</button>
+        <button class="equals" onclick="calculate()">=</button>
+        <button class="operator" onclick="appendValue('+')">+</button>
+    </div>
+</div>
+
+<script>
+    const display = document.getElementById('display');
+    const memoryIndicator = document.getElementById('memory-indicator');
+    
+    let isCalculated = false;
+    let memoryValue = 0;
+
+    // --- Keyboard Integration ---
+    document.addEventListener('keydown', function(event) {
+        const key = event.key;
+
+        if (/[0-9\+\-\*\/\.\(\)]/.test(key)) {
+            appendValue(key);
+            event.preventDefault(); 
+        } 
+        else if (key === 'Enter' || key === '=') {
+            calculate();
+            event.preventDefault();
+        } 
+        else if (key === 'Backspace') {
+            deleteLast();
+        } 
+        else if (key.toLowerCase() === 'c' || key === 'Escape') {
+            clearDisplay();
+        }
+    });
+
+    // --- Display Logic ---
+    function appendValue(value) {
+        if (isCalculated && /[0-9\.]/.test(value)) {
+            display.value = '';
+        }
+        isCalculated = false;
+
+        if (display.value === 'Error') clearDisplay();
+
+        let displayVal = value;
+        if (value === '*') displayVal = '×';
+        if (value === '/') displayVal = '÷';
+
+        display.value += displayVal;
+    }
+
+    function clearDisplay() {
+        display.value = '';
+        isCalculated = false;
+    }
+
+    function deleteLast() {
+        if (display.value === 'Error') {
+            clearDisplay();
+        } else {
+            display.value = display.value.slice(0, -1);
+        }
+    }
+
+    // --- Memory Logic ---
+    function updateMemoryIndicator() {
+        memoryIndicator.innerText = memoryValue !== 0 ? 'M' : '';
+    }
+
+    function evaluateForMemory() {
+        try {
+            if (!display.value.trim()) return 0;
+            let expression = display.value.replace(/×/g, '*').replace(/÷/g, '/');
+            let result = new Function('return ' + expression)();
+            return result || 0;
+        } catch {
+            return 0;
+        }
+    }
+
+    function memoryClear() {
+        memoryValue = 0;
+        updateMemoryIndicator();
+    }
+
+    function memoryRecall() {
+        if (memoryValue !== 0) {
+            appendValue(memoryValue);
+        }
+    }
+
+    function memoryAdd() {
+        memoryValue += evaluateForMemory();
+        updateMemoryIndicator();
+        calculate();
+    }
+
+    function memorySubtract() {
+        memoryValue -= evaluateForMemory();
+        updateMemoryIndicator();
+        calculate();
+    }
+
+    // --- Core Math ---
+    function calculate() {
+        try {
+            if (!display.value.trim()) return;
+
+            let expression = display.value.replace(/×/g, '*').replace(/÷/g, '/');
+            
+            // Native evaluator since we don't have math.js
+            let result = new Function('return ' + expression)();
+
+            // Fix native JS floating point drift (e.g. 0.1 + 0.2)
+            result = Math.round(result * 10000000000) / 10000000000;
+
+            display.value = result;
+            isCalculated = true; 
+        } catch (error) {
+            display.value = 'Error';
+            isCalculated = false;
+            setTimeout(clearDisplay, 1500);
+        }
+    }
+</script>
+
+</body>
+</html>

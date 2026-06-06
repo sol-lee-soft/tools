@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sol-Lee-Soft Toolkit</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .menu-container {
+            background-color: #1e1e1e;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            width: 360px;
+            text-align: center;
+        }
+        .brand {
+            color: #888;
+            font-size: 16px;
+            margin-bottom: 5px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        h1 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 500;
+        }
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .nav-btn {
+            display: block;
+            padding: 16px;
+            font-size: 18px;
+            text-decoration: none;
+            border-radius: 8px;
+            background-color: #333333;
+            color: #ffffff;
+            font-weight: bold;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .nav-btn:hover {
+            background-color: #444444;
+            transform: translateY(-2px);
+        }
+        .nav-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Specific Button Accents */
+        .sci-btn { border-left: 5px solid #2a4d69; }
+        .fin-btn { border-left: 5px solid #4527a0; }
+        .bas-btn { border-left: 5px solid #388e3c; }
+        
+        hr {
+            border: none;
+            border-top: 1px solid #333;
+            margin: 25px 0;
+        }
+        
+        .home-btn {
+            background-color: #d32f2f;
+            border-left: none;
+        }
+        .home-btn:hover {
+            background-color: #ef5350;
+        }
+    </style>
+</head>
+<body>
+
+<div class="menu-container">
+    <div class="brand">Sol-Lee-Soft</div>
+    <h1>Calculator Suite</h1>
+    
+    <div class="menu-buttons">
+        <a href="calculator.html" class="nav-btn sci-btn">Scientific Calculator</a>
+        <a href="financial-calculator.html" class="nav-btn fin-btn">Financial Calculator</a>
+        <a href="basic-calculator.html" class="nav-btn bas-btn">Office Calculator</a>
+        
+        <hr>
+        
+        <a href="index.html" class="nav-btn home-btn">Return to Main Site</a>
+    </div>
+</div>
+
+</body>
+</html>

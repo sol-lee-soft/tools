@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sol-Lee-Soft Financial Calculator</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .calculator {
+            background-color: #1e1e1e;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            width: 480px;
+        }
+        .header {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .tvm-hud {
+            display: flex;
+            justify-content: space-between;
+            background-color: #111;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #4caf50;
+            font-family: monospace;
+            border: 1px solid #333;
+        }
+        .hud-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .hud-label { color: #888; margin-bottom: 2px; }
+        .display-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .cpt-indicator {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            font-size: 12px;
+            color: #ff5252;
+            font-weight: bold;
+        }
+        .display {
+            width: 100%;
+            height: 75px;
+            background-color: #2d2d2d;
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 26px;
+            text-align: right;
+            padding: 25px 15px 10px 15px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+        button {
+            padding: 12px 0;
+            font-size: 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #333333;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        button:hover { background-color: #444444; }
+        button:active { background-color: #555555; }
+        
+        .tvm-btn { background-color: #4527a0; font-weight: bold; color: #fff; }
+        .tvm-btn:hover { background-color: #512da8; }
+        .cpt-btn { background-color: #c2185b; font-weight: bold; }
+        .cpt-btn:hover { background-color: #d81b60; }
+        .func { background-color: #2a4d69; font-size: 14px; }
+        .func:hover { background-color: #3b698e; }
+        .operator { background-color: #ff9800; color: #121212; font-weight: bold; font-size: 18px; }
+        .operator:hover { background-color: #ffb74d; }
+        .clear { background-color: #d32f2f; }
+        .clear:hover { background-color: #ef5350; }
+        .equals { background-color: #388e3c; font-weight: bold; font-size: 20px;}
+        .equals:hover { background-color: #4caf50; }
+    </style>
+</head>
+<body>
+
+<div class="calculator">
+    <div class="header">Sol-Lee-Soft FinCalc</div>
+    
+    <div class="tvm-hud">
+        <div class="hud-item"><span class="hud-label">N</span><span id="hud-n">0</span></div>
+        <div class="hud-item"><span class="hud-label">I/Y(%)</span><span id="hud-iy">0</span></div>
+        <div class="hud-item"><span class="hud-label">PV</span><span id="hud-pv">0</span></div>
+        <div class="hud-item"><span class="hud-label">PMT</span><span id="hud-pmt">0</span></div>
+        <div class="hud-item"><span class="hud-label">FV</span><span id="hud-fv">0</span></div>
+    </div>
+
+    <div class="display-container">
+        <div id="cpt-indicator" class="cpt-indicator"></div>
+        <input type="text" id="display" class="display" disabled>
+    </div>
+    
+    <div class="buttons">
+        <button class="tvm-btn" onclick="handleTVM('N')">N</button>
+        <button class="tvm-btn" onclick="handleTVM('IY')">I/Y</button>
+        <button class="tvm-btn" onclick="handleTVM('PV')">PV</button>
+        <button class="tvm-btn" onclick="handleTVM('PMT')">PMT</button>
+        <button class="tvm-btn" onclick="handleTVM('FV')">FV</button>
+
+        <button class="cpt-btn" onclick="toggleCompute()">CPT</button>
+        <button class="clear" onclick="clearTVM()">CLR TVM</button>
+        <button class="func" onclick="appendValue('(')">(</button>
+        <button class="func" onclick="appendValue(')')">)</button>
+        <button class="func" onclick="appendValue('^')">x^y</button>
+
+        <button class="func" onclick="appendValue('log(')">ln</button>
+        <button class="func" onclick="appendValue('e')">e</button>
+        <button class="func" onclick="appendValue('%')">%</button>
+        <button class="clear" onclick="deleteLast()">DEL</button>
+        <button class="clear" onclick="clearDisplay()">CE/C</button>
+        
+        <button onclick="appendValue('7')">7</button>
+        <button onclick="appendValue('8')">8</button>
+        <button onclick="appendValue('9')">9</button>
+        <button class="operator" onclick="appendValue('*')">×</button>
+        <button class="operator" onclick="appendValue('/')">÷</button>
+
+        <button onclick="appendValue('4')">4</button>
+        <button onclick="appendValue('5')">5</button>
+        <button onclick="appendValue('6')">6</button>
+        <button class="operator" onclick="appendValue('+')">+</button>
+        <button class="operator" onclick="appendValue('-')">-</button>
+
+        <button onclick="appendValue('1')">1</button>
+        <button onclick="appendValue('2')">2</button>
+        <button onclick="appendValue('3')">3</button>
+        <button class="operator" onclick="appendValue('-')">(-)</button>
+        <button class="equals" style="grid-row: span 2;" onclick="calculate()">=</button>
+
+        <button onclick="appendValue('0')" style="grid-column: span 2;">0</button>
+        <button onclick="appendValue('.')">.</button>
+        <button onclick="appendValue(',')"><b>,</b></button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+<script>
+    const display = document.getElementById('display');
+    const cptIndicator = document.getElementById('cpt-indicator');
+    
+    let tvm = { N: 0, IY: 0, PV: 0, PMT: 0, FV: 0 };
+    let isComputing = false;
+
+    // --- Keyboard Integration ---
+    document.addEventListener('keydown', function(event) {
+        const key = event.key;
+
+        // Numbers, Operators, and Basic punctuation
+        if (/[0-9\+\-\*\/\.\(\)\,%]/.test(key)) {
+            appendValue(key);
+            event.preventDefault(); // Prevents browser hotkeys like Quick Find on '/'
+        } 
+        // Equals / Enter
+        else if (key === 'Enter' || key === '=') {
+            calculate();
+            event.preventDefault();
+        } 
+        // Backspace
+        else if (key === 'Backspace') {
+            deleteLast();
+        } 
+        // Clear Display (C or c)
+        else if (key.toLowerCase() === 'c') {
+            clearDisplay();
+        } 
+        // Clear TVM Memory (Escape)
+        else if (key === 'Escape') {
+            clearTVM();
+        }
+    });
+
+    // --- Standard Display Functions ---
+    function appendValue(value) {
+        if (display.value === 'Error' || display.value.includes('=')) clearDisplay();
+        display.value += value;
+        if(isComputing) toggleCompute(); 
+    }
+
+    function clearDisplay() {
+        display.value = '';
+    }
+
+    function deleteLast() {
+        if (display.value === 'Error') {
+            clearDisplay();
+        } else {
+            display.value = display.value.slice(0, -1);
+        }
+    }
+
+    function evaluateCurrentDisplay() {
+        try {
+            if (!display.value.trim()) return 0;
+            let result = math.evaluate(display.value);
+            return math.number(result); 
+        } catch (error) {
+            return null; 
+        }
+    }
+
+    function calculate() {
+        try {
+            if (!display.value.trim()) return;
+            let result = math.evaluate(display.value);
+            result = math.format(result, { precision: 10 });
+            display.value = result;
+        } catch (error) {
+            display.value = 'Error';
+            setTimeout(clearDisplay, 1500);
+        }
+    }
+
+    // --- TVM UI Functions ---
+    function toggleCompute() {
+        isComputing = !isComputing;
+        cptIndicator.innerText = isComputing ? 'COMPUTE MODE' : '';
+    }
+
+    function updateHUD() {
+        document.getElementById('hud-n').innerText = parseFloat(tvm.N.toFixed(4));
+        document.getElementById('hud-iy').innerText = parseFloat(tvm.IY.toFixed(4));
+        document.getElementById('hud-pv').innerText = parseFloat(tvm.PV.toFixed(2));
+        document.getElementById('hud-pmt').innerText = parseFloat(tvm.PMT.toFixed(2));
+        document.getElementById('hud-fv').innerText = parseFloat(tvm.FV.toFixed(2));
+    }
+
+    function clearTVM() {
+        tvm = { N: 0, IY: 0, PV: 0, PMT: 0, FV: 0 };
+        updateHUD();
+        isComputing = false;
+        cptIndicator.innerText = '';
+        display.value = 'TVM CLEARED';
+        setTimeout(clearDisplay, 1500);
+    }
+
+    function handleTVM(variable) {
+        if (isComputing) {
+            solveTVM(variable);
+            toggleCompute(); 
+        } else {
+            let val = evaluateCurrentDisplay();
+            if (val !== null) {
+                tvm[variable] = val;
+                updateHUD();
+                display.value = `${variable} = ${math.format(val, { precision: 10 })}`;
+                setTimeout(clearDisplay, 1000);
+            }
+        }
+    }
+
+    // --- TVM Core Math Solvers (END Mode) ---
+    function solveTVM(target) {
+        let n = tvm.N;
+        let r = tvm.IY / 100;
+        let pv = tvm.PV;
+        let pmt = tvm.PMT;
+        let fv = tvm.FV;
+        let result = 0;
+
+        try {
+            if (target === 'FV') {
+                if (r === 0) result = -(pv + pmt * n);
+                else result = -(pv * Math.pow(1+r, n) + pmt * (Math.pow(1+r, n) - 1) / r);
+                tvm.FV = result;
+            } 
+            else if (target === 'PV') {
+                if (r === 0) result = -(fv + pmt * n);
+                else result = -(fv / Math.pow(1+r, n) + pmt * (1 - Math.pow(1+r, -n)) / r);
+                tvm.PV = result;
+            } 
+            else if (target === 'PMT') {
+                if (n === 0) throw "N cannot be 0";
+                if (r === 0) result = -(pv + fv) / n;
+                else result = -(pv + fv / Math.pow(1+r, n)) / ((1 - Math.pow(1+r, -n)) / r);
+                tvm.PMT = result;
+            } 
+            else if (target === 'N') {
+                if (pmt === 0 && r === 0) throw "Error";
+                if (r === 0) result = -(pv + fv) / pmt;
+                else result = Math.log((pmt - fv*r) / (pmt + pv*r)) / Math.log(1+r);
+                tvm.N = result;
+            } 
+            else if (target === 'IY') {
+                result = solveForIY(n, pv, pmt, fv);
+                tvm.IY = result;
+            }
+
+            updateHUD();
+            display.value = `${target} = ${math.format(result, { precision: 6 })}`;
+        } catch (e) {
+            display.value = 'TVM Error';
+            setTimeout(clearDisplay, 1500);
+        }
+    }
+
+    // Iterative Bisection Solver for Interest Rate (I/Y)
+    function solveForIY(n, pv, pmt, fv) {
+        if (n === 0) throw "Error";
+        let low = -0.9999; 
+        let high = 10.0;   
+        let tolerance = 1e-7;
+        
+        for (let i = 0; i < 1000; i++) {
+            let mid = (low + high) / 2;
+            let npvMid = calcNPV(mid, n, pv, pmt, fv);
+            
+            if (Math.abs(npvMid) < tolerance) return mid * 100;
+            
+            let npvLow = calcNPV(low, n, pv, pmt, fv);
+            if (Math.sign(npvMid) === Math.sign(npvLow)) low = mid;
+            else high = mid;
+        }
+        return (low + high) / 2 * 100;
+    }
+
+    function calcNPV(r, n, pv, pmt, fv) {
+        if (r === 0) return pv + (pmt * n) + fv;
+        return pv + pmt * ((1 - Math.pow(1 + r, -n)) / r) + fv / Math.pow(1 + r, n);
+    }
+</script>
+
+</body>
+</html>

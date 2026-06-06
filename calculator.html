@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sol-Lee-Soft Scientific Calculator</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .calculator {
+            background-color: #1e1e1e;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            width: 460px;
+        }
+        .header {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .display-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .memory-indicator {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            font-size: 12px;
+            color: #ff9800;
+            font-weight: bold;
+        }
+        .display {
+            width: 100%;
+            height: 75px;
+            background-color: #2d2d2d;
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 26px;
+            text-align: right;
+            padding: 25px 15px 10px 15px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+        button {
+            padding: 12px 0;
+            font-size: 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #333333;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        button:hover { background-color: #444444; }
+        button:active { background-color: #555555; }
+        
+        .memory { background-color: #4a4a4a; color: #ffb74d; font-weight: bold; }
+        .memory:hover { background-color: #5a5a5a; }
+        .adv-func { background-color: #3d2c5e; font-size: 13px; }
+        .adv-func:hover { background-color: #4e3a7a; }
+        .func { background-color: #2a4d69; font-size: 14px; }
+        .func:hover { background-color: #3b698e; }
+        .operator { background-color: #ff9800; color: #121212; font-weight: bold; font-size: 18px; }
+        .operator:hover { background-color: #ffb74d; }
+        .clear { background-color: #d32f2f; }
+        .clear:hover { background-color: #ef5350; }
+        .equals { background-color: #388e3c; font-weight: bold; font-size: 20px;}
+        .equals:hover { background-color: #4caf50; }
+    </style>
+</head>
+<body>
+
+<div class="calculator">
+    <div class="header">Sol-Lee-Soft</div>
+    <div class="display-container">
+        <div id="memory-indicator" class="memory-indicator"></div>
+        <input type="text" id="display" class="display" disabled>
+    </div>
+    
+    <div class="buttons">
+        <button class="memory" onclick="memoryClear()">MC</button>
+        <button class="memory" onclick="memoryRecall()">MR</button>
+        <button class="memory" onclick="memoryAdd()">M+</button>
+        <button class="memory" onclick="memorySubtract()">M-</button>
+        <button class="memory" onclick="memoryStore()">MS</button>
+
+        <button class="adv-func" onclick="appendValue('sinh(')">sinh</button>
+        <button class="adv-func" onclick="appendValue('cosh(')">cosh</button>
+        <button class="adv-func" onclick="appendValue('tanh(')">tanh</button>
+        <button class="adv-func" onclick="appendValue('combinations(')">nCr</button>
+        <button class="adv-func" onclick="appendValue('permutations(')">nPr</button>
+
+        <button class="adv-func" onclick="appendValue('asinh(')">asinh</button>
+        <button class="adv-func" onclick="appendValue('acosh(')">acosh</button>
+        <button class="adv-func" onclick="appendValue('atanh(')">atanh</button>
+        <button class="adv-func" onclick="appendValue('random()')">RAND</button>
+        <button class="adv-func" onclick="appendValue('mod(')">mod</button>
+
+        <button class="func" onclick="appendValue('sin(')">sin</button>
+        <button class="func" onclick="appendValue('cos(')">cos</button>
+        <button class="func" onclick="appendValue('tan(')">tan</button>
+        <button class="func" onclick="appendValue('log(')">ln</button>
+        <button class="func" onclick="appendValue('log10(')">log</button>
+
+        <button class="func" onclick="appendValue('asin(')">asin</button>
+        <button class="func" onclick="appendValue('acos(')">acos</button>
+        <button class="func" onclick="appendValue('atan(')">atan</button>
+        <button class="func" onclick="appendValue('^2')">x²</button>
+        <button class="func" onclick="appendValue('^')">x^y</button>
+
+        <button class="func" onclick="appendValue('sqrt(')">√</button>
+        <button class="func" onclick="appendValue('!')">!</button>
+        <button class="func" onclick="appendValue('pi')">π</button>
+        <button class="func" onclick="appendValue('e')">e</button>
+        <button class="func" onclick="appendValue('E')">EXP</button>
+
+        <button class="func" onclick="appendValue('(')">(</button>
+        <button class="func" onclick="appendValue(')')">)</button>
+        <button class="func" onclick="appendValue('abs(')">|x|</button>
+        <button class="func" onclick="appendValue('%')">%</button>
+        <button class="func" onclick="appendValue(',')"><b>,</b></button>
+        
+        <button onclick="appendValue('7')">7</button>
+        <button onclick="appendValue('8')">8</button>
+        <button onclick="appendValue('9')">9</button>
+        <button class="clear" onclick="deleteLast()">DEL</button>
+        <button class="clear" onclick="clearDisplay()">C</button>
+
+        <button onclick="appendValue('4')">4</button>
+        <button onclick="appendValue('5')">5</button>
+        <button onclick="appendValue('6')">6</button>
+        <button class="operator" onclick="appendValue('*')">×</button>
+        <button class="operator" onclick="appendValue('/')">÷</button>
+
+        <button onclick="appendValue('1')">1</button>
+        <button onclick="appendValue('2')">2</button>
+        <button onclick="appendValue('3')">3</button>
+        <button class="operator" onclick="appendValue('+')">+</button>
+        <button class="operator" onclick="appendValue('-')">-</button>
+
+        <button onclick="appendValue('0')">0</button>
+        <button onclick="appendValue('.')">.</button>
+        <button onclick="appendValue('-')">(-)</button>
+        <button class="equals" style="grid-column: span 2;" onclick="calculate()">=</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+<script>
+    const display = document.getElementById('display');
+    const memoryIndicator = document.getElementById('memory-indicator');
+    let memoryValue = 0;
+
+    function appendValue(value) {
+        if (display.value === 'Error') clearDisplay();
+        display.value += value;
+    }
+
+    function clearDisplay() {
+        display.value = '';
+    }
+
+    function deleteLast() {
+        if (display.value === 'Error') {
+            clearDisplay();
+        } else {
+            display.value = display.value.slice(0, -1);
+        }
+    }
+
+    // --- Memory Functions ---
+    function updateMemoryIndicator() {
+        memoryIndicator.innerText = memoryValue !== 0 ? 'M' : '';
+    }
+
+    function evaluateCurrentDisplay() {
+        try {
+            if (!display.value.trim()) return 0;
+            let result = math.evaluate(display.value);
+            return math.number(result); 
+        } catch (error) {
+            return 0; 
+        }
+    }
+
+    function memoryClear() {
+        memoryValue = 0;
+        updateMemoryIndicator();
+    }
+
+    function memoryRecall() {
+        if (memoryValue !== 0) {
+            appendValue(memoryValue);
+        }
+    }
+
+    function memoryAdd() {
+        let currentVal = evaluateCurrentDisplay();
+        memoryValue += currentVal;
+        updateMemoryIndicator();
+        calculate(); 
+    }
+
+    function memorySubtract() {
+        let currentVal = evaluateCurrentDisplay();
+        memoryValue -= currentVal;
+        updateMemoryIndicator();
+        calculate();
+    }
+
+    function memoryStore() {
+        let currentVal = evaluateCurrentDisplay();
+        memoryValue = currentVal;
+        updateMemoryIndicator();
+        calculate();
+    }
+
+    // --- Core Calculation ---
+    function calculate() {
+        try {
+            if (!display.value.trim()) return;
+
+            let result = math.evaluate(display.value);
+            result = math.format(result, { precision: 14 });
+            
+            display.value = result;
+        } catch (error) {
+            display.value = 'Error';
+            setTimeout(clearDisplay, 1500);
+        }
+    }
+</script>
+
+</body>
+</html>
