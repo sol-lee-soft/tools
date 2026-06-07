@@ -6,14 +6,19 @@ A professional collection of client-side web tools designed for precision calcul
 
 ---
 
-## 🛠 Included Tools
+## 🛠 Main Dashboard & Sub-Menus
 
-| Tool | Purpose |
-| :--- | :--- |
-| **Clinical Metrics** | MELD-Na, MELD 3.0, and eGFR health diagnostics. |
-| **Universal Finance** | Solve for Loan Principal, Interest, Terms, or Payments. |
-| **Investment Growth** | Monthly compounding and profit margin analysis. |
-| **Inflation Toolkit** | CPI historical search and future payout projections. |
+Instead of cluttering the landing page, the toolkit utilizes a streamlined interface where core tools are organized cleanly into specialized sub-menus:
+
+- **Precision Calculators:** Access our core engines for Universal Finance, Investment Growth, and the Inflation Toolkit from the primary dashboard interfaces.
+- **Clinical Metrics Sub-Menu:** A dedicated medical gateway consolidating **MELD-Na, MELD 3.0, and eGFR** diagnostics under a single, unified health panel.
+
+---
+
+## 🛰 Looking for Telemetry Tools?
+The **Sol-Lee-Soft Digital Speedometer** is kept completely separate from this toolkit and has been moved to its own dedicated, optimized mobile repository for independent development.
+
+👉 **[Check out the Digital Speedometer Repository](https://github.com/sol-lee-soft/speedometer)**
 
 ---
 
@@ -23,9 +28,9 @@ A professional collection of client-side web tools designed for precision calcul
 ---
 
 ## 🔒 Privacy & Operational Notes
-- **Zero Tracking:** All calculations are performed locally in your browser. No data is stored or transmitted.
-- **Client-Side:** Built with vanilla HTML5, CSS3, and JavaScript.
-- **License:** Distributed under the MIT License. See `docs.html` for full details.
+- **Zero Tracking:** All calculations are performed entirely locally in your browser. No private data or input metrics are ever stored, tracked, or transmitted.
+- **Client-Side Build:** Engineered using pure vanilla HTML5, CSS3, and JavaScript.
+- **License & Documentation:** Distributed under the MIT License. See `docs.html` within the live suite for full operational details.
 
 ---
-© 2026 SOL-LEE-SOFT | CA
+© 2026 SOL-LEE-SOFT | DISCOVERY BAY, CALIFORNIA
