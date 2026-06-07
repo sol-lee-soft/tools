@@ -53,12 +53,16 @@
         }
         .btn-reset-pipeline:hover { background: rgba(207, 102, 121, 0.08); }
         
-        .back-dash { border-top: 1px solid #2d2d2d; padding-top: 15px; color: var(--accent-color); font-weight: bold; font-size: 0.85rem; text-align: center; text-decoration: none; }
+        .back-dash { 
+            border-top: 1px solid #2d2d2d; padding-top: 15px; color: var(--accent-color); font-weight: bold; font-size: 0.85rem; text-align: center; text-decoration: none; 
+            margin-top: auto;
+            flex-shrink: 0;
+        }
 
         .main-content { flex-grow: 1; display: flex; flex-direction: column; height: 100%; background: var(--bg-color); }
         
         header { padding: 20px 40px; border-bottom: 1px solid var(--border-color); background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; }
-        .title-input { background: transparent; border: none; color: white; font-size: 1.6rem; font-weight: bold; width: 60%; }
+        .title-input { background: transparent; border: none; color: white; font-size: 1.6rem; font-weight: bold; width: 45%; }
         .title-input:focus { outline: none; border-bottom: 1px solid var(--accent-color); }
         .project-tag { font-size: 0.8rem; color: var(--accent-color); font-weight: bold; text-transform: uppercase; }
 
@@ -71,6 +75,18 @@
             font-size: 1rem; line-height: 1.6; box-sizing: border-box; resize: none;
         }
         textarea:focus { border-color: var(--accent-color); outline: none; }
+
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        .btn-action { background: transparent; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; transition: background 0.2s; }
+        .btn-action:hover { background: rgba(187, 134, 252, 0.08); }
+        .btn-action-primary { background: var(--accent-color); color: #121212; border: none; }
+        .btn-action-primary:hover { opacity: 0.9; }
+
+        @media (max-width: 768px) {
+            header { padding: 15px 20px; flex-direction: column; gap: 15px; align-items: flex-start; }
+            .title-input { width: 100%; }
+            .header-actions { width: 100%; justify-content: flex-start; }
+        }
     </style>
 </head>
 <body>
@@ -78,8 +94,7 @@
 <div class="sidebar">
     <h2>Script Pipeline</h2>
     <div class="scene-list" id="sceneListContainer">
-        <!-- Loaded via JS -->
-    </div>
+        </div>
     <button class="btn-add-scene" onclick="createNewScene()">+ ADD NEW SCENE</button>
     <button class="btn-reset-pipeline" onclick="clearAllPipeline()">WIPE ALL SCENES</button>
     <a href="index.html" class="back-dash">← BACK TO DASHBOARD</a>
@@ -88,7 +103,11 @@
 <div class="main-content">
     <header>
         <input type="text" id="sceneTitleEditor" class="title-input" oninput="updateActiveSceneTitle(this.value)">
-        <span class="project-tag">Script Editor</span>
+        <div class="header-actions">
+            <button class="btn-action" onclick="printScreenplay()">🖨 PRINT SCENE</button>
+            <button class="btn-action btn-action-primary" onclick="downloadScreenplay()">💾 SAVE TO DISK</button>
+            <span class="project-tag" style="margin-left: 5px;">Script Editor</span>
+        </div>
     </header>
 
     <div class="editor-container">
@@ -102,7 +121,6 @@
     let activeIndex = 0;
 
     window.onload = function() {
-        // Force-clear old script fragments from previous tests
         const cache = localStorage.getItem('solLeeSoftScripts');
         if (cache && cache.includes('Launch Sequence')) {
             localStorage.removeItem('solLeeSoftScripts');
@@ -115,7 +133,7 @@
         if (stored) {
             scriptDatabase = JSON.parse(stored);
         } else {
-            scriptDatabase = []; // Strictly empty at baseline launch
+            scriptDatabase = []; 
             saveScriptsToStorage();
         }
         renderSidebar();
@@ -207,6 +225,43 @@
             scriptDatabase[activeIndex].text = val;
             saveScriptsToStorage();
         }
+    }
+
+    function downloadScreenplay() {
+        if (scriptDatabase.length === 0) return alert("No active scenes to save.");
+        const activeScene = scriptDatabase[activeIndex];
+        const fileContent = `${activeScene.title}\n\n${activeScene.text}`;
+        const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(fileContent);
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `${activeScene.title.replace(/\s+/g, '_')}_script.txt`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function printScreenplay() {
+        if (scriptDatabase.length === 0) return alert("No active content to print.");
+        const activeScene = scriptDatabase[activeIndex];
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>${activeScene.title}</title>
+                <style>
+                    body { background: white; color: black; font-family: 'Courier New', Courier, monospace; padding: 1.5in 1in 1in 1.5in; font-size: 12pt; line-height: 2; }
+                    h1 { text-align: center; font-size: 14pt; margin-bottom: 1in; text-transform: uppercase; }
+                    pre { white-space: pre-wrap; font-family: inherit; }
+                </style>
+            </head>
+            <body>
+                <h1>${activeScene.title}</h1>
+                <pre>${activeScene.text}</pre>
+                <script>window.onload = function() { window.print(); window.close(); }</s` + `cript>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
     }
 </script>
 
