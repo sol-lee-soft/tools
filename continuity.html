@@ -31,7 +31,7 @@
         .subtitle { color: var(--sub-text); margin: 0; font-size: 0.95rem; }
 
         .header-main-titles { text-align: left; }
-        .header-actions { display: flex; gap: 10px; align-items: center; }
+        .header-actions { display: flex; gap: 8px; align-items: center; }
         .btn-action { background: transparent; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; transition: background 0.2s; text-transform: uppercase; }
         .btn-action:hover { background: rgba(187, 134, 252, 0.08); }
         .btn-action-primary { background: var(--accent-color); color: #121212; border: none; }
@@ -109,6 +109,8 @@
             <p class="subtitle">System Parameter Lock & Rule Validation Pipeline</p>
         </div>
         <div class="header-actions">
+            <input type="file" id="importFileSelector" accept=".txt" style="display: none;" onchange="importRulesFromFile(this)">
+            <button class="btn-action" onclick="document.getElementById('importFileSelector').click()">📂 LOAD</button>
             <button class="btn-action" onclick="printContinuity()">🖨 PRINT</button>
             <button class="btn-action btn-action-primary" onclick="exportConfig()">💾 SAVE</button>
         </div>
@@ -153,4 +155,202 @@
             </div>
             <div>
                 <div class="toggle-group">
-                    <span class="toggle-label
+                    <span class="toggle-label">VRAM Optimization Level</span>
+                    <label class="switch">
+                        <input type="checkbox" id="vramOptimize" onchange="saveConfig()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-group">
+                    <span class="toggle-label">Prevent Image/Video Auto-Requests</span>
+                    <label class="switch">
+                        <input type="checkbox" id="blockMediaQuota" onchange="saveConfig()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-container">
+        <button class="btn btn-primary" onclick="compileRules()">Compile Rule Block</button>
+        <button class="btn btn-secondary" onclick="exportConfig()">Export (JSON)</button>
+        <button class="btn btn-danger" onclick="clearWorkspace()">Wipe All</button>
+    </div>
+
+    <div class="output-box">
+        <div class="output-header">
+            <span class="output-title">Compiled Continuity Parameters</span>
+            <span id="copyToast" class="copy-toast">Copied to Clipboard!</span>
+        </div>
+        <pre id="outputContent">Click "Compile Rule Block" to evaluate system parameters...</pre>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        const cache = localStorage.getItem('solLeeSoftContinuity');
+        if (cache && cache.includes('Ticket to the Moon')) {
+            localStorage.removeItem('solLeeSoftContinuity');
+        }
+        loadConfig();
+    };
+
+    function generateRulesText() {
+        const pName = document.getElementById('projectName').value || 'UNNAMED_PROJECT';
+        const sIdent = document.getElementById('sceneIdentifier').value || 'UNDEFINED_SCENE';
+        const envConstants = document.getElementById('environmentalConstants').value || 'None specified.';
+        
+        const strictVal = document.getElementById('ruleValidation').checked ? 'ENABLED' : 'DISABLED';
+        const archLock = document.getElementById('lockAssets').checked ? 'ACTIVE' : 'INACTIVE';
+        const vramOpt = document.getElementById('vramOptimize').checked ? 'MAX' : 'STANDARD';
+        const blockMedia = document.getElementById('blockMediaQuota').checked ? 'STRICT_BLOCK' : 'ALLOW';
+
+        return `[CONTINUITY_CONFIG_BLOCK]\nPROJECT_NAME: ${pName}\nSCENE_REF: ${sIdent}\n--------------------------------------------------\nCRITICAL CORE DIRECTIVES:\n- STRICT RULE VALIDATION: ${strictVal}\n- ARCHITECTURAL INTEGRITY LOCK: ${archLock}\n- FILE GENERATION / SYSTEM CAP: ${blockMedia}\n- MEMORY RESOURCE PROFILE: ${vramOpt}\n--------------------------------------------------\nENVIRONMENTAL & VISUAL CONSTANTS:\n${envConstants}\n[END_BLOCK]`;
+    }
+
+    function compileRules() {
+        const text = generateRulesText();
+        document.getElementById('outputContent').innerText = text;
+        navigator.clipboard.writeText(text).then(() => {
+            const toast = document.getElementById('copyToast');
+            toast.style.display = 'inline';
+            setTimeout(() => { toast.style.display = 'none'; }, 2000);
+        });
+    }
+
+    function saveConfig() {
+        const configObj = {
+            project: document.getElementById('projectName').value,
+            scene: document.getElementById('sceneIdentifier').value,
+            constants: document.getElementById('environmentalConstants').value,
+            ruleValidation: document.getElementById('ruleValidation').checked,
+            lockAssets: document.getElementById('lockAssets').checked,
+            vramOptimize: document.getElementById('vramOptimize').checked,
+            blockMediaQuota: document.getElementById('blockMediaQuota').checked
+        };
+        localStorage.setItem('solLeeSoftContinuity', JSON.stringify(configObj));
+    }
+
+    function loadConfig() {
+        const stored = localStorage.getItem('solLeeSoftContinuity');
+        if (stored) {
+            const config = JSON.parse(stored);
+            document.getElementById('projectName').value = config.project || '';
+            document.getElementById('sceneIdentifier').value = config.scene || '';
+            document.getElementById('environmentalConstants').value = config.constants || '';
+            document.getElementById('ruleValidation').checked = config.ruleValidation ?? true;
+            document.getElementById('lockAssets').checked = config.lockAssets ?? true;
+            document.getElementById('vramOptimize').checked = config.vramOptimize ?? false;
+            document.getElementById('blockMediaQuota').checked = config.blockMediaQuota ?? true;
+        } else {
+            resetFormDefaults();
+        }
+    }
+
+    function resetFormDefaults() {
+        document.getElementById('projectName').value = '';
+        document.getElementById('sceneIdentifier').value = '';
+        document.getElementById('environmentalConstants').value = '';
+        document.getElementById('ruleValidation').checked = true;
+        document.getElementById('lockAssets').checked = true;
+        document.getElementById('vramOptimize').checked = false;
+        document.getElementById('blockMediaQuota').checked = true;
+        document.getElementById('outputContent').innerText = 'Click "Compile Rule Block" to evaluate system parameters...';
+    }
+
+    function clearWorkspace() {
+        if(confirm("Are you sure you want to clear your current continuity profile parameters?")) {
+            localStorage.removeItem('solLeeSoftContinuity');
+            resetFormDefaults();
+        }
+    }
+
+    function exportConfig() {
+        const rules = generateRulesText();
+        const pName = document.getElementById('projectName').value || 'unnamed';
+        const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(rules);
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `${pName.replace(/\s+/g, '_')}_continuity_config.txt`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function printContinuity() {
+        const text = generateRulesText();
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Project Continuity Specification</title>
+                <style>
+                    body { background: white; color: black; font-family: 'Courier New', Courier, monospace; padding: 1in; font-size: 11pt; line-height: 1.5; }
+                    h1 { border-bottom: 2px solid black; padding-bottom: 5px; font-size: 16pt; text-transform: uppercase; margin-bottom: 20px; }
+                    pre { white-space: pre-wrap; font-family: inherit; background: #f5f5f5; padding: 20px; border: 1px solid #ccc; }
+                </style>
+            </head>
+            <body>
+                <h1>Project Continuity Specification</h1>
+                <pre>${text}</pre>
+                <script>window.onload = function() { window.print(); window.close(); }</s` + `cript>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+
+    function importRulesFromFile(input) {
+        if (!input.files || input.files.length === 0) return;
+        const file = input.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const contents = e.target.result;
+            try {
+                // Parsing logic targeting your custom string structures
+                const pNameMatch = contents.match(/PROJECT_NAME:\s*(.*)/);
+                const sIdentMatch = contents.match(/SCENE_REF:\s*(.*)/);
+                
+                const strictMatch = contents.match(/- STRICT RULE VALIDATION:\s*(\w+)/);
+                const lockMatch = contents.match(/- ARCHITECTURAL INTEGRITY LOCK:\s*(\w+)/);
+                const mediaMatch = contents.match(/- FILE GENERATION \/ SYSTEM CAP:\s*(\w+)/);
+                const vramMatch = contents.match(/- MEMORY RESOURCE PROFILE:\s*(\w+)/);
+                
+                const lines = contents.split('\n');
+                let constantsStart = -1;
+                let constantsEnd = -1;
+                for(let i=0; i<lines.length; i++) {
+                    if(lines[i].includes('ENVIRONMENTAL & VISUAL CONSTANTS:')) constantsStart = i + 1;
+                    if(lines[i].includes('[END_BLOCK]')) constantsEnd = i;
+                }
+                
+                let constantsText = '';
+                if(constantsStart !== -1 && constantsEnd !== -1) {
+                    constantsText = lines.slice(constantsStart, constantsEnd).join('\n').trim();
+                }
+
+                if (pNameMatch) document.getElementById('projectName').value = pNameMatch[1].trim();
+                if (sIdentMatch) document.getElementById('sceneIdentifier').value = sIdentMatch[1].trim();
+                if (constantsText) document.getElementById('environmentalConstants').value = constantsText;
+                
+                if (strictMatch) document.getElementById('ruleValidation').checked = (strictMatch[1].trim() === 'ENABLED');
+                if (lockMatch) document.getElementById('lockAssets').checked = (lockMatch[1].trim() === 'ACTIVE');
+                if (mediaMatch) document.getElementById('blockMediaQuota').checked = (mediaMatch[1].trim() === 'STRICT_BLOCK');
+                if (vramMatch) document.getElementById('vramOptimize').checked = (vramMatch[1].trim() === 'MAX');
+                
+                saveConfig();
+                document.getElementById('outputContent').innerText = contents;
+                alert("Continuity profile parameters parsed and loaded successfully!");
+            } catch (err) {
+                alert("Could not cleanly read parameters from file layout structure.");
+            }
+            input.value = ''; // Reset selector node
+        };
+        reader.readAsText(file);
+    }
+</script>
+
+</body>
+</html>
