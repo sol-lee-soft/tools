@@ -1,4 +1,4 @@
-# Sol-Lee-Soft Digital Toolkit (v1.0.0)
+# Sol-Lee-Soft Digital Toolkit (v1.1.01)
 
 A professional collection of client-side web tools designed for precision calculations, diagnostics, and media utilities. 
 
