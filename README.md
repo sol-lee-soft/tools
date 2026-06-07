@@ -1,4 +1,4 @@
-# Sol-Lee-Soft Digital Toolkit (v1.1.0)
+# Sol-Lee-Soft Digital Toolkit (v1.0.0)
 
 A professional collection of client-side web tools designed for precision calculations, diagnostics, and media utilities. 
 
@@ -17,10 +17,22 @@ The toolkit features a streamlined, high-level dashboard organized into four cor
 
 ---
 
+## 🤖 AI-Engineered & User-Customizable 
+
+Every tool in this toolkit was built by **Gemini** under limited human supervision. The code is structured intentionally using clean, vanilla client-side languages so that it remains completely open and adaptive.
+
+**Want a new feature or a different layout? Customize it yourself instantly:**
+1. View the source code or download the specific tool file (`.html`) to your local hard drive.
+2. Dump the file directly into **Gemini** (or your preferred AI collaborator).
+3. Tell the AI exactly what features, buttons, or calculation mechanics you want to add or change.
+4. Save the freshly generated code back to your drive, open it in your browser, and you will instantly have the exact custom utility you need.
+
+---
+
 ## 🛰 Looking for Telemetry Tools?
 The **Sol-Lee-Soft Digital Speedometer** is developed independently from this toolkit and has been moved to its own dedicated, optimized mobile repository for device permission management.
 
-👉 **[Check out the Digital Speedometer Repository](https://github.com/sol-lee-soft/speedo)**
+👉 **[Check out the Digital Speedometer Repository](https://github.com/sol-lee-soft/speedometer)**
 
 ---
 
