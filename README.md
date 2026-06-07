@@ -20,7 +20,7 @@ The toolkit features a streamlined, high-level dashboard organized into four cor
 ## 🛰 Looking for Telemetry Tools?
 The **Sol-Lee-Soft Digital Speedometer** is developed independently from this toolkit and has been moved to its own dedicated, optimized mobile repository for device permission management.
 
-👉 **[Check out the Digital Speedometer Repository](https://github.com/sol-lee-soft/speedometer)**
+👉 **[Check out the Digital Speedometer Repository](https://github.com/sol-lee-soft/speedo)**
 
 ---
 
