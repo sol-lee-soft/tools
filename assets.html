@@ -37,7 +37,7 @@
         .subtitle { color: var(--sub-text); margin: 0; font-size: 0.95rem; }
 
         .header-main-titles { text-align: left; }
-        .header-actions { display: flex; gap: 10px; align-items: center; }
+        .header-actions { display: flex; gap: 8px; align-items: center; }
         .btn-action { background: transparent; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; transition: background 0.2s; text-transform: uppercase; }
         .btn-action:hover { background: rgba(187, 134, 252, 0.08); }
         .btn-action-primary { background: var(--accent-color); color: #121212; border: none; }
@@ -129,6 +129,8 @@
             <p class="subtitle">Workspace Inventory & Render Status Pipeline</p>
         </div>
         <div class="header-actions">
+            <input type="file" id="manifestLoadSelector" accept=".txt" style="display: none;" onchange="loadManifestFromFile(this)">
+            <button class="btn-action" onclick="document.getElementById('manifestLoadSelector').click()">📂 LOAD</button>
             <button class="btn-action" onclick="printAssets()">🖨 PRINT</button>
             <button class="btn-action btn-action-primary" onclick="downloadAssetManifest()">💾 SAVE</button>
         </div>
@@ -378,6 +380,49 @@
             </html>
         `);
         printWindow.document.close();
+    }
+
+    function loadManifestFromFile(input) {
+        if (!input.files || input.files.length === 0) return;
+        const file = input.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const content = e.target.result;
+            try {
+                // Splits manifest text blocks to reconstruct raw array items
+                const blocks = content.split('----------------------------------------------------------------------');
+                const parsedInventory = [];
+
+                blocks.forEach(block => {
+                    const fileMatch = block.match(/FILE:\s*(.*)/);
+                    const typeStatusMatch = block.match(/TYPE:\s*(\w+)\s*\|\s*STATUS:\s*(.*)/);
+
+                    if (fileMatch && typeStatusMatch) {
+                        parsedInventory.push({
+                            name: fileMatch[1].trim(),
+                            type: typeStatusMatch[1].trim(),
+                            status: typeStatusMatch[2].trim()
+                        });
+                    }
+                });
+
+                if (parsedInventory.length > 0) {
+                    if (confirm(`Found ${parsedInventory.length} assets inside manifest. Replace current tracking ledger workspace completely?`)) {
+                        assetInventory = parsedInventory;
+                        saveAssetsToMemory();
+                        renderTable();
+                        alert("Asset workspace ledger completely restored!");
+                    }
+                } else {
+                    alert("No distinct asset entries found matching file syntax structure.");
+                }
+            } catch (err) {
+                alert("Could not interpret lines from manifest file.");
+            }
+            input.value = ''; // Reset input node node
+        };
+        reader.readAsText(file);
     }
 </script>
 
