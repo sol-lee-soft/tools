@@ -30,7 +30,7 @@
         h1 { color: var(--accent-color); margin-bottom: 5px; font-size: 2.8rem; letter-spacing: -1px; }
         .version-tag { color: #555; font-size: 0.9rem; font-weight: bold; text-transform: uppercase; }
 
-        /* Main Tool Grid */
+        /* Main Tool Grid (Responsive Column Alignment) */
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -57,6 +57,12 @@
             border-color: var(--accent-color);
             box-shadow: 0 12px 30px rgba(187, 134, 252, 0.15);
         }
+        
+        /* Forces the odd-numbered card to cleanly span the base full-width on desktops */
+        .full-width-card {
+            grid-column: span 2;
+        }
+
         .tool-card h3, .trigger-card h3 { margin: 15px 0 8px 0; font-size: 1.2rem; color: var(--accent-color); }
         .tool-card p, .trigger-card p { font-size: 0.85rem; color: var(--sub-text); margin: 0; line-height: 1.4; }
 
@@ -203,6 +209,7 @@
 
         @media (max-width: 500px) {
             .grid { grid-template-columns: 1fr; }
+            .full-width-card { grid-column: span 1; }
             h1 { font-size: 2.2rem; }
         }
     </style>
@@ -213,7 +220,7 @@
     <header>
         <span class="version-tag">Production Release</span>
         <h1>Sol-Lee-Soft</h1>
-        <p style="color: #888;">Precision Digital Suite v1.1.0</p>
+        <p style="color: #888;">Precision Digital Suite v1.15</p>
     </header>
 
     <div class="grid">
@@ -236,6 +243,11 @@
             <h3>Media Tools</h3>
             <p>Project Asset Managers, Continuity<br>Configurators, and Script Pipelines</p>
         </div>
+
+        <a href="conversions.html" class="tool-card full-width-card">
+            <h3>Metric Master</h3>
+            <p>Instant, Side-by-Side Grid Conversions for Linear, Area, Volume, and Weights</p>
+        </a>
     </div>
 
     <div class="legal-footer">
@@ -249,7 +261,6 @@
     </div>
 </div>
 
-<!-- Financial Submenu Modal -->
 <div id="financialSubmenu" class="submenu-panel">
     <div class="submenu-content">
         <button class="close-btn" onclick="toggleFinancialSubmenu(false)">&times;</button>
@@ -284,7 +295,6 @@
     </div>
 </div>
 
-<!-- Media Submenu Modal -->
 <div id="mediaSubmenu" class="submenu-panel">
     <div class="submenu-content">
         <button class="close-btn" onclick="toggleMediaSubmenu(false)">&times;</button>

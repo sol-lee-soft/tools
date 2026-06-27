@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sol Lee Soft - Metric Conversions v1.0</title>
+    <style>
+        /* Base Styling */
+        * { box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background-color: #1e1e1e; color: #ffffff; padding: 15px; margin: 0; }
+        
+        .container { max-width: 900px; margin: 0 auto; position: relative; min-height: 92vh; padding-bottom: 40px; }
+        
+        /* Header Bar */
+        .header-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; min-height: 50px; gap: 10px; }
+        
+        .nav-btn { 
+            background-color: #3d3d3d; color: #ffffff; border: 1px solid #555; 
+            padding: 10px 18px; border-radius: 6px; cursor: pointer; 
+            font-size: 0.95rem; min-height: 48px; display: inline-flex; 
+            align-items: center; font-weight: bold; text-decoration: none;
+            white-space: nowrap;
+        }
+        .nav-btn:hover { background-color: #444; border-color: #4caf50; }
+        
+        /* Tactile Clear Button Styles */
+        .clear-btn {
+            background-color: #721c24; color: #f8d7da; border: 1px solid #f5c6cb;
+        }
+        .clear-btn:hover { background-color: #f5c6cb; color: #721c24; border-color: #f5c6cb; }
+        
+        h2 { color: #4caf50; font-size: 1.3rem; margin: 0; text-align: center; flex: 1; }
+        .version-stamp { font-size: 0.95rem; color: #555555; font-weight: bold; min-width: 50px; text-align: right; white-space: nowrap; }
+
+        /* Master Category Menu Bar (Always Visible) */
+        .category-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
+        
+        .category-btn {
+            background-color: #2d2d2d; border: 1px solid #3d3d3d; color: #ffffff;
+            padding: 12px; font-size: 1rem; font-weight: bold; border-radius: 6px;
+            cursor: pointer; text-align: center; min-height: 50px;
+            transition: all 0.2s;
+        }
+        .category-btn:hover { background-color: #383838; border-color: #4caf50; }
+        .category-btn.active { background-color: #334433; border-color: #4caf50; color: #4caf50; }
+
+        /* Side-by-Side Parallel Grid */
+        .split-screen { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .hidden { display: none !important; }
+        
+        .column-title {
+            text-align: center; font-size: 1.1rem; color: #4caf50; margin-bottom: 12px;
+            text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #3d3d3d; padding-bottom: 5px;
+        }
+        .column { display: flex; flex-direction: column; gap: 12px; }
+
+        /* Tactile Input Rows */
+        .unit-row { display: flex; align-items: center; background-color: #2d2d2d; border-radius: 8px; overflow: hidden; border: 1px solid #3d3d3d; min-height: 54px; }
+        .unit-label { width: 95px; padding-left: 15px; font-weight: bold; font-size: 1.05rem; color: #a0a0a0; }
+        .unit-input {
+            flex: 1; background: transparent; border: none; color: #ffffff;
+            font-size: 1.3rem; padding: 10px 15px; width: 100%; height: 100%; text-align: right;
+        }
+        .unit-input:focus { outline: none; background-color: #334433; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="header-bar">
+        <a href="index.html" class="nav-btn">← Back</a>
+        <h2>Sol Lee Soft Utilities</h2>
+        <button class="nav-btn clear-btn" onclick="clearActiveGrid()">❌ Clear</button>
+        <div class="version-stamp">v1.0</div>
+    </div>
+    
+    <div class="category-bar">
+        <button class="category-btn active" id="btn-distance" onclick="switchTab('distance')">Distance</button>
+        <button class="category-btn" id="btn-area" onclick="switchTab('area')">Area</button>
+        <button class="category-btn" id="btn-volume" onclick="switchTab('volume')">Volume</button>
+        <button class="category-btn" id="btn-weight" onclick="switchTab('weight')">Weight</button>
+    </div>
+    
+    <div id="distanceScreen" class="split-screen module-screen">
+        <div class="column">
+            <div class="column-title">Metric</div>
+            <div class="unit-row"><div class="unit-label">mm</div><input type="number" inputmode="decimal" class="unit-input" id="mm" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">cm</div><input type="number" inputmode="decimal" class="unit-input" id="cm" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">m</div><input type="number" inputmode="decimal" class="unit-input" id="m" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">km</div><input type="number" inputmode="decimal" class="unit-input" id="km" placeholder="0"></div>
+        </div>
+        <div class="column">
+            <div class="column-title">US Standard</div>
+            <div class="unit-row"><div class="unit-label">in</div><input type="number" inputmode="decimal" class="unit-input" id="in" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">ft</div><input type="number" inputmode="decimal" class="unit-input" id="ft" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">yd</div><input type="number" inputmode="decimal" class="unit-input" id="yd" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">mi</div><input type="number" inputmode="decimal" class="unit-input" id="mi" placeholder="0"></div>
+        </div>
+    </div>
+
+    <div id="areaScreen" class="split-screen hidden module-screen">
+        <div class="column">
+            <div class="column-title">Metric</div>
+            <div class="unit-row"><div class="unit-label">cm²</div><input type="number" inputmode="decimal" class="unit-input" id="sqcm" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">m²</div><input type="number" inputmode="decimal" class="unit-input" id="sqm" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">hectare</div><input type="number" inputmode="decimal" class="unit-input" id="ha" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">km²</div><input type="number" inputmode="decimal" class="unit-input" id="sqkm" placeholder="0"></div>
+        </div>
+        <div class="column">
+            <div class="column-title">US Standard</div>
+            <div class="unit-row"><div class="unit-label">in²</div><input type="number" inputmode="decimal" class="unit-input" id="sqin" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">ft²</div><input type="number" inputmode="decimal" class="unit-input" id="sqft" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">acres</div><input type="number" inputmode="decimal" class="unit-input" id="acr" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">mi²</div><input type="number" inputmode="decimal" class="unit-input" id="sqmi" placeholder="0"></div>
+        </div>
+    </div>
+
+    <div id="volumeScreen" class="split-screen hidden module-screen">
+        <div class="column">
+            <div class="column-title">Metric</div>
+            <div class="unit-row"><div class="unit-label">ml</div><input type="number" inputmode="decimal" class="unit-input" id="ml" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">liters</div><input type="number" inputmode="decimal" class="unit-input" id="liters" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">m³</div><input type="number" inputmode="decimal" class="unit-input" id="cum" placeholder="0"></div>
+        </div>
+        <div class="column">
+            <div class="column-title">US Standard</div>
+            <div class="unit-row"><div class="unit-label">fl oz</div><input type="number" inputmode="decimal" class="unit-input" id="floz" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">qt</div><input type="number" inputmode="decimal" class="unit-input" id="qt" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">gal</div><input type="number" inputmode="decimal" class="unit-input" id="gal" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">ft³</div><input type="number" inputmode="decimal" class="unit-input" id="cuft" placeholder="0"></div>
+        </div>
+    </div>
+
+    <div id="weightScreen" class="split-screen hidden module-screen">
+        <div class="column">
+            <div class="column-title">Metric</div>
+            <div class="unit-row"><div class="unit-label">mg</div><input type="number" inputmode="decimal" class="unit-input" id="mg" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">grams</div><input type="number" inputmode="decimal" class="unit-input" id="grams" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">kg</div><input type="number" inputmode="decimal" class="unit-input" id="kg" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">Metric Ton</div><input type="number" inputmode="decimal" class="unit-input" id="metTon" placeholder="0"></div>
+        </div>
+        <div class="column">
+            <div class="column-title">US Standard</div>
+            <div class="unit-row"><div class="unit-label">oz</div><input type="number" inputmode="decimal" class="unit-input" id="oz" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">lbs</div><input type="number" inputmode="decimal" class="unit-input" id="lbs" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">US Ton</div><input type="number" inputmode="decimal" class="unit-input" id="usTon" placeholder="0"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Tab Toggling Interface Logic
+    function switchTab(moduleType) {
+        document.querySelectorAll('.module-screen').forEach(screen => screen.classList.add('hidden'));
+        document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+        
+        document.getElementById(`${moduleType}Screen`).classList.remove('hidden');
+        document.getElementById(`btn-${moduleType}`).classList.add('active');
+        
+        clearActiveGrid();
+    }
+
+    // Master Clear Button Function
+    function clearActiveGrid() {
+        document.querySelectorAll('.unit-input').forEach(i => i.value = '');
+    }
+
+    // High-Precision Conversion Multipliers
+    const valuationMatrices = {
+        distance: {
+            mm: 1, cm: 10, m: 1000, km: 1000000,
+            in: 25.4, ft: 304.8, yd: 914.4, mi: 1609344
+        },
+        area: {
+            sqcm: 0.0001, sqm: 1, ha: 10000, sqkm: 1000000,
+            sqin: 0.00064516, sqft: 0.09290304, acr: 4046.8564224, sqmi: 2589988.110336
+        },
+        volume: {
+            ml: 0.001, liters: 1, cum: 1000,
+            floz: 0.02957353, qt: 0.94635295, gal: 3.78541178, cuft: 28.31684659
+        },
+        weight: {
+            mg: 0.001, grams: 1, kg: 1000, metTon: 1000000,
+            oz: 28.349523125, lbs: 453.59237, usTon: 907184.74
+        }
+    };
+
+    // Global Calculation Pipeline
+    const inputs = document.querySelectorAll('.unit-input');
+
+    inputs.forEach(input => {
+        input.addEventListener('input', (e) => {
+            const targetField = e.target;
+            
+            // Clean parsing to fix integer/decimal glitch
+            const value = parseFloat(targetField.value);
+            
+            const parentModule = targetField.closest('.module-screen');
+            const moduleType = parentModule.id.replace('Screen', '');
+            const matrix = valuationMatrices[moduleType];
+            
+            const moduleInputs = parentModule.querySelectorAll('.unit-input');
+
+            // Safe fallback if box is completely empty
+            if (isNaN(value) || targetField.value === '') {
+                moduleInputs.forEach(i => { if (i !== targetField) i.value = ''; });
+                return;
+            }
+
+            // Calculation Core execution pass through base-bridge unit
+            const valueInBaseUnit = value * matrix[targetField.id];
+
+            // Re-render sister elements instantly inside active workspace block
+            moduleInputs.forEach(i => {
+                if (i.id !== targetField.id) {
+                    const localValue = valueInBaseUnit / matrix[i.id];
+                    i.value = parseFloat(localValue.toFixed(4));
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
