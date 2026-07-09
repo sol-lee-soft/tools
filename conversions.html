@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sol Lee Soft - Metric Conversions v1.0</title>
+    <title>Sol Lee Soft - Metric Conversions v1.1</title>
     <style>
         /* Base Styling */
         * { box-sizing: border-box; font-family: Arial, sans-serif; }
@@ -32,12 +32,15 @@
         h2 { color: #4caf50; font-size: 1.3rem; margin: 0; text-align: center; flex: 1; }
         .version-stamp { font-size: 0.95rem; color: #555555; font-weight: bold; min-width: 50px; text-align: right; white-space: nowrap; }
 
-        /* Master Category Menu Bar (Always Visible) */
-        .category-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
+        /* Master Category Menu Bar (Two perfectly matched rows of 5 on desktop) */
+        .category-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 25px; }
+        @media (max-width: 750px) {
+            .category-bar { grid-template-columns: repeat(2, 1fr); }
+        }
         
         .category-btn {
             background-color: #2d2d2d; border: 1px solid #3d3d3d; color: #ffffff;
-            padding: 12px; font-size: 1rem; font-weight: bold; border-radius: 6px;
+            padding: 12px; font-size: 0.95rem; font-weight: bold; border-radius: 6px;
             cursor: pointer; text-align: center; min-height: 50px;
             transition: all 0.2s;
         }
@@ -46,6 +49,9 @@
 
         /* Side-by-Side Parallel Grid */
         .split-screen { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 600px) {
+            .split-screen { grid-template-columns: 1fr; }
+        }
         .hidden { display: none !important; }
         
         .column-title {
@@ -55,13 +61,13 @@
         .column { display: flex; flex-direction: column; gap: 12px; }
 
         /* Tactile Input Rows */
-        .unit-row { display: flex; align-items: center; background-color: #2d2d2d; border-radius: 8px; overflow: hidden; border: 1px solid #3d3d3d; min-height: 54px; }
-        .unit-label { width: 95px; padding-left: 15px; font-weight: bold; font-size: 1.05rem; color: #a0a0a0; }
+        .unit-row { display: flex; align-items: center; background-color: #2d2d2d; border-radius: 8px; overflow: hidden; border: 1px solid #3d3d3d; min-height: 54px; width: 100%; }
+        .unit-label { width: 115px; padding-left: 15px; font-weight: bold; font-size: 1.01rem; color: #a0a0a0; flex-shrink: 0; }
         .unit-input {
             flex: 1; background: transparent; border: none; color: #ffffff;
             font-size: 1.3rem; padding: 10px 15px; width: 100%; height: 100%; text-align: right;
         }
-        .unit-input:focus { outline: none; background-color: #334433; }
+        .unit-input:focus { outline: none; background: #334433 !important; }
     </style>
 </head>
 <body>
@@ -72,7 +78,7 @@
         <a href="index.html" class="nav-btn">← Back</a>
         <h2>Sol Lee Soft Utilities</h2>
         <button class="nav-btn clear-btn" onclick="clearActiveGrid()">❌ Clear</button>
-        <div class="version-stamp">v1.0</div>
+        <div class="version-stamp">v1.1</div>
     </div>
     
     <div class="category-bar">
@@ -80,6 +86,12 @@
         <button class="category-btn" id="btn-area" onclick="switchTab('area')">Area</button>
         <button class="category-btn" id="btn-volume" onclick="switchTab('volume')">Volume</button>
         <button class="category-btn" id="btn-weight" onclick="switchTab('weight')">Weight</button>
+        <button class="category-btn" id="btn-temp" onclick="switchTab('temp')">Temperature</button>
+        <button class="category-btn" id="btn-pressure" onclick="switchTab('pressure')">Pressure</button>
+        <button class="category-btn" id="btn-energy" onclick="switchTab('energy')">Energy</button>
+        <button class="category-btn" id="btn-speed" onclick="switchTab('speed')">Speed</button>
+        <button class="category-btn" id="btn-flow" onclick="switchTab('flow')">Flow Rate</button>
+        <button class="category-btn" id="btn-angles" onclick="switchTab('angles')">Angles</button>
     </div>
     
     <div id="distanceScreen" class="split-screen module-screen">
@@ -118,17 +130,22 @@
 
     <div id="volumeScreen" class="split-screen hidden module-screen">
         <div class="column">
-            <div class="column-title">Metric</div>
+            <div class="column-title">Metric Volume</div>
             <div class="unit-row"><div class="unit-label">ml</div><input type="number" inputmode="decimal" class="unit-input" id="ml" placeholder="0"></div>
             <div class="unit-row"><div class="unit-label">liters</div><input type="number" inputmode="decimal" class="unit-input" id="liters" placeholder="0"></div>
-            <div class="unit-row"><div class="unit-label">m³</div><input type="number" inputmode="decimal" class="unit-input" id="cum" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">hL (hecto)</div><input type="number" inputmode="decimal" class="unit-input" id="hl" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">m³ (cubic)</div><input type="number" inputmode="decimal" class="unit-input" id="cum" placeholder="0"></div>
         </div>
         <div class="column">
-            <div class="column-title">US Standard</div>
+            <div class="column-title">US Volume / Macro</div>
+            <div class="unit-row"><div class="unit-label">tsp</div><input type="number" inputmode="decimal" class="unit-input" id="tsp" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">tbsp</div><input type="number" inputmode="decimal" class="unit-input" id="tbsp" placeholder="0"></div>
             <div class="unit-row"><div class="unit-label">fl oz</div><input type="number" inputmode="decimal" class="unit-input" id="floz" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">cups</div><input type="number" inputmode="decimal" class="unit-input" id="cups" placeholder="0"></div>
             <div class="unit-row"><div class="unit-label">qt</div><input type="number" inputmode="decimal" class="unit-input" id="qt" placeholder="0"></div>
             <div class="unit-row"><div class="unit-label">gal</div><input type="number" inputmode="decimal" class="unit-input" id="gal" placeholder="0"></div>
-            <div class="unit-row"><div class="unit-label">ft³</div><input type="number" inputmode="decimal" class="unit-input" id="cuft" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">ft³ (cubic)</div><input type="number" inputmode="decimal" class="unit-input" id="cuft" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">Acre-Feet</div><input type="number" inputmode="decimal" class="unit-input" id="acft" placeholder="0"></div>
         </div>
     </div>
 
@@ -145,6 +162,94 @@
             <div class="unit-row"><div class="unit-label">oz</div><input type="number" inputmode="decimal" class="unit-input" id="oz" placeholder="0"></div>
             <div class="unit-row"><div class="unit-label">lbs</div><input type="number" inputmode="decimal" class="unit-input" id="lbs" placeholder="0"></div>
             <div class="unit-row"><div class="unit-label">US Ton</div><input type="number" inputmode="decimal" class="unit-input" id="usTon" placeholder="0"></div>
+        </div>
+    </div>
+
+    <div id="tempScreen" class="split-screen hidden module-screen">
+        <div class="column">
+            <div class="column-title">Metric / Absolute</div>
+            <div class="unit-row"><div class="unit-label">°C</div><input type="number" inputmode="decimal" class="unit-input" id="celsius" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">K</div><input type="number" inputmode="decimal" class="unit-input" id="kelvin" placeholder="0"></div>
+        </div>
+        <div class="column">
+            <div class="column-title">US / Absolute</div>
+            <div class="unit-row"><div class="unit-label">°F</div><input type="number" inputmode="decimal" class="unit-input" id="fahrenheit" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">°R</div><input type="number" inputmode="decimal" class="unit-input" id="rankine" placeholder="0"></div>
+        </div>
+    </div>
+
+    <div id="pressureScreen" class="split-screen hidden module-screen">
+        <div class="column">
+            <div class="column-title">Metric / Custom</div>
+            <div class="unit-row"><div class="unit-label">Pa</div><input type="number" inputmode="decimal" class="unit-input" id="pa" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">kPa</div><input type="number" inputmode="decimal" class="unit-input" id="kpa" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">hPa</div><input type="number" inputmode="decimal" class="unit-input" id="hpa" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">bar</div><input type="number" inputmode="decimal" class="unit-input" id="bar" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">mb</div><input type="number" inputmode="decimal" class="unit-input" id="mb" placeholder="0"></div>
+        </div>
+        <div class="column">
+            <div class="column-title">Imperial / Atmospheric</div>
+            <div class="unit-row"><div class="unit-label">psi</div><input type="number" inputmode="decimal" class="unit-input" id="psi" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">atm</div><input type="number" inputmode="decimal" class="unit-input" id="atm" placeholder="0"></div>
+        </div>
+    </div>
+
+    <div id="energyScreen" class="split-screen hidden module-screen">
+        <div class="column">
+            <div class="column-title">Metric / Other</div>
+            <div class="unit-row"><div class="unit-label">J</div><input type="number" inputmode="decimal" class="unit-input" id="j" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">kJ</div><input type="number" inputmode="decimal" class="unit-input" id="kj" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">cal</div><input type="number" inputmode="decimal" class="unit-input" id="cal" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">kcal</div><input type="number" inputmode="decimal" class="unit-input" id="kcal" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">eV</div><input type="number" inputmode="decimal" class="unit-input" id="ev" placeholder="0"></div>
+        </div>
+        <div class="column">
+            <div class="column-title">Imperial / HVAC</div>
+            <div class="unit-row"><div class="unit-label">BTU</div><input type="number" inputmode="decimal" class="unit-input" id="btu" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">Therms</div><input type="number" inputmode="decimal" class="unit-input" id="therms" placeholder="0"></div>
+        </div>
+    </div>
+
+    <div id="speedScreen" class="split-screen hidden module-screen">
+        <div class="column">
+            <div class="column-title">Metric</div>
+            <div class="unit-row"><div class="unit-label">m/s</div><input type="number" inputmode="decimal" class="unit-input" id="ms" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">km/h</div><input type="number" inputmode="decimal" class="unit-input" id="kmh" placeholder="0"></div>
+        </div>
+        <div class="column">
+            <div class="column-title">Imperial / Marine / Aero</div>
+            <div class="unit-row"><div class="unit-label">mph</div><input type="number" inputmode="decimal" class="unit-input" id="mph" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">knots</div><input type="number" inputmode="decimal" class="unit-input" id="knots" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">fps</div><input type="number" inputmode="decimal" class="unit-input" id="fps" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">Mach</div><input type="number" inputmode="decimal" class="unit-input" id="mach" placeholder="0"></div>
+        </div>
+    </div>
+
+    <div id="flowScreen" class="split-screen hidden module-screen">
+        <div class="column">
+            <div class="column-title">Metric Flow</div>
+            <div class="unit-row"><div class="unit-label">L/s</div><input type="number" inputmode="decimal" class="unit-input" id="lps" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">L/min</div><input type="number" inputmode="decimal" class="unit-input" id="lpmin" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">m³/h</div><input type="number" inputmode="decimal" class="unit-input" id="cumph" placeholder="0"></div>
+        </div>
+        <div class="column">
+            <div class="column-title">US Standard Flow</div>
+            <div class="unit-row"><div class="unit-label">GPM</div><input type="number" inputmode="decimal" class="unit-input" id="gpm" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">cfs (ft³/s)</div><input type="number" inputmode="decimal" class="unit-input" id="cfs" placeholder="0"></div>
+        </div>
+    </div>
+
+    <div id="anglesScreen" class="split-screen hidden module-screen">
+        <div class="column">
+            <div class="column-title">Standard / Analytic</div>
+            <div class="unit-row"><div class="unit-label">Degrees (°)</div><input type="number" inputmode="decimal" class="unit-input" id="deg" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">Radians (rad)</div><input type="number" inputmode="decimal" class="unit-input" id="rad" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">Gradians (gon)</div><input type="number" inputmode="decimal" class="unit-input" id="gon" placeholder="0"></div>
+        </div>
+        <div class="column">
+            <div class="column-title">Precision Sub-Angles</div>
+            <div class="unit-row"><div class="unit-label">Arcminutes (')</div><input type="number" inputmode="decimal" class="unit-input" id="arcmin" placeholder="0"></div>
+            <div class="unit-row"><div class="unit-label">Arcseconds (")</div><input type="number" inputmode="decimal" class="unit-input" id="arcsec" placeholder="0"></div>
         </div>
     </div>
 
@@ -178,14 +283,57 @@
             sqin: 0.00064516, sqft: 0.09290304, acr: 4046.8564224, sqmi: 2589988.110336
         },
         volume: {
-            ml: 0.001, liters: 1, cum: 1000,
-            floz: 0.02957353, qt: 0.94635295, gal: 3.78541178, cuft: 28.31684659
+            ml: 0.001, liters: 1, hl: 100, cum: 1000,
+            tsp: 0.00492892159375, tbsp: 0.01478676478125, floz: 0.0295735295625,
+            cups: 0.2365882365, qt: 0.94635294625, gal: 3.785411784,
+            cuft: 28.316846592, acft: 1233481.8375475
         },
         weight: {
             mg: 0.001, grams: 1, kg: 1000, metTon: 1000000,
             oz: 28.349523125, lbs: 453.59237, usTon: 907184.74
+        },
+        pressure: {
+            pa: 1, kpa: 1000, hpa: 100, bar: 100000, mb: 100,
+            psi: 6894.757293168, atm: 101325
+        },
+        energy: {
+            j: 1, kj: 1000, cal: 4.184, kcal: 4184, ev: 1.602176634e-19,
+            btu: 1055.05585262, therms: 105480400
+        },
+        speed: {
+            ms: 1, kmh: 0.27777777777778,
+            mph: 0.44704, knots: 0.51444444444444, fps: 0.3048, mach: 340.29
+        },
+        flow: {
+            lps: 1, lpmin: 0.016666666666666666, cumph: 0.27777777777778,
+            gpm: 0.0630901964, cfs: 28.316846592
+        },
+        angles: {
+            deg: 1, rad: 57.29577951308232, gon: 0.9,
+            arcmin: 0.016666666666666666, arcsec: 0.0002777777777777778
         }
     };
+
+    // Dedicated Temperature Logic Node (Bypasses scalar multipliers)
+    function handleTemperature(targetField, value, moduleInputs) {
+        let c = 0;
+        if (targetField.id === 'celsius') c = value;
+        else if (targetField.id === 'kelvin') c = value - 273.15;
+        else if (targetField.id === 'fahrenheit') c = (value - 32) * 5 / 9;
+        else if (targetField.id === 'rankine') c = (value - 491.67) * 5 / 9;
+
+        moduleInputs.forEach(i => {
+            if (i.id !== targetField.id) {
+                let localValue = 0;
+                if (i.id === 'celsius') localValue = c;
+                else if (i.id === 'kelvin') localValue = c + 273.15;
+                else if (i.id === 'fahrenheit') localValue = (c * 9 / 5) + 32;
+                else if (i.id === 'rankine') localValue = (c + 273.15) * 9 / 5;
+                
+                i.value = parseFloat(localValue.toFixed(4));
+            }
+        });
+    }
 
     // Global Calculation Pipeline
     const inputs = document.querySelectorAll('.unit-input');
@@ -193,30 +341,35 @@
     inputs.forEach(input => {
         input.addEventListener('input', (e) => {
             const targetField = e.target;
-            
-            // Clean parsing to fix integer/decimal glitch
             const value = parseFloat(targetField.value);
-            
             const parentModule = targetField.closest('.module-screen');
             const moduleType = parentModule.id.replace('Screen', '');
-            const matrix = valuationMatrices[moduleType];
-            
             const moduleInputs = parentModule.querySelectorAll('.unit-input');
 
-            // Safe fallback if box is completely empty
+            // Safe fallback if input box is completely cleared out
             if (isNaN(value) || targetField.value === '') {
                 moduleInputs.forEach(i => { if (i !== targetField) i.value = ''; });
                 return;
             }
 
-            // Calculation Core execution pass through base-bridge unit
+            // Route to custom temperature controller if active
+            if (moduleType === 'temp') {
+                handleTemperature(targetField, value, moduleInputs);
+                return;
+            }
+
+            const matrix = valuationMatrices[moduleType];
             const valueInBaseUnit = value * matrix[targetField.id];
 
-            // Re-render sister elements instantly inside active workspace block
+            // Re-render matching matrix inputs instantly
             moduleInputs.forEach(i => {
-                if (i.id !== targetField.id) {
+                if (i.id !== targetField.id && matrix[i.id] !== undefined) {
                     const localValue = valueInBaseUnit / matrix[i.id];
-                    i.value = parseFloat(localValue.toFixed(4));
+                    if (localValue < 1e-4 && localValue > 0) {
+                        i.value = localValue.toExponential(4);
+                    } else {
+                        i.value = parseFloat(localValue.toFixed(4));
+                    }
                 }
             });
         });
